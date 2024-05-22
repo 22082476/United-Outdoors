@@ -9,7 +9,6 @@ def main():
     #     export_cursor = connection_dw.cursor()
 
     product = get_data(cursor_aw, "Production.Product")
-
     sub_category = get_data(cursor_aw, "Production.ProductSubcategory")
     category = get_data(cursor_aw, "Production.ProductCategory")
     
@@ -72,6 +71,7 @@ def main():
 def main2():
        # combi tabel van products, suppliers & Categories
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    product_aenc = get_data(cursor_aenc, "Product")
 
     nw_category = get_data(cursor_nw, "dbo.Categories")
     nw_products = get_data(cursor_nw, "dbo.Products")
@@ -79,7 +79,8 @@ def main2():
 
     nw_product_merge = pd.merge(nw_category, nw_products)
     nw_product_merge2 = pd.merge(nw_product_merge, nw_suppliers)
-    nw_product_merge2
+    nw_product_merge3 = pd.merge(nw_product_merge2, product_aenc)
+    nw_product_merge3
 
 
 
