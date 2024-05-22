@@ -3,6 +3,10 @@ from connections import setup_cursors, get_data
 
 def main():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    #  cursor_aw = connection_aw.cursor()
+    #     cursor_nw = connection_nw.cursor()
+    #     cursor_aenc = connection_aenc.cursor()
+    #     export_cursor = connection_dw.cursor()
 
     product = get_data(cursor_aw, "Production.Product")
 
@@ -27,6 +31,7 @@ def main():
     categories = categories.rename(columns={'Name_x': 'ProductSubCategory', 'Name_y': 'ProductCategory'})
     categories = categories.loc[:, ['ProductSubcategoryID', 'ProductSubCategory', 'ProductCategory']]
     
+
     # Som van alle hoeveelheden gepakt per ProductID, kan ook anders
     inventory = inventory.groupby('ProductID')['Quantity'].sum().reset_index()
     
@@ -61,3 +66,20 @@ def main():
 
     aw_products = pd.merge(product3, vendor_info2, left_on='ProductID', right_on='ProductID', how='left')
     aw_products['ProductID'] = 'AW_' + aw_products['ProductID'].astype(str)
+
+
+ 
+def main2():
+       # combi tabel van products, suppliers & Categories
+    cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+
+    nw_category = get_data(cursor_nw, "dbo.Categories")
+    nw_products = get_data(cursor_nw, "dbo.Products")
+    nw_suppliers = get_data(cursor_nw, "dbo.Suppliers")
+
+    nw_product_merge = pd.merge(nw_category, nw_products)
+    nw_product_merge2 = pd.merge(nw_product_merge, nw_suppliers)
+    nw_product_merge2
+
+
+
