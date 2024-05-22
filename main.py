@@ -2,6 +2,7 @@ import pandas as pd
 from connections import setup_cursors, get_data
 
 def main():
+    #Merge the fuckers
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()
@@ -112,6 +113,7 @@ def products_northwind():
 def products_aenc():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
     products = get_data(cursor_aenc, 'Product')
-    products = products.loc[:, ['id', 'name', 'description', 'prod_size','color','quantity','unit_price','Category']].rename(columns={'quantity':'Quantity', 'unit_price':'ListPrice','prod_size':'size', 'id':'ProductID','description':'Name','name':'ProductSubCategory','Category':'ProductCategory'})
-    
+    products = products.loc[:, ['id', 'name', 'description', 'prod_size','color','quantity','unit_price','Category']].rename(columns={'quantity':'Quantity', 'unit_price':'ListPrice','prod_size':'Size', 'id':'ProductID','description':'Name','name':'ProductSubCategory','Category':'ProductCategory', 'color':'Color'})
+    products['ProductID'] = 'AC_' + products['ProductID'].astype(str)
+
     return products
