@@ -9,7 +9,7 @@ CREATE TABLE product_review (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    review_date date NOT NULL, 
+    review_date datetime NOT NULL, 
 
     /* Product */
     product_id int NOT NULL,
@@ -31,9 +31,9 @@ CREATE TABLE product_review (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -53,8 +53,6 @@ CREATE TABLE product_review (
 CREATE TABLE bill_of_materials (
     s_key INT IDENTITY(1,1) PRIMARY KEY,
 	bill_of_materials_id INT NOT NULL,
-    bill_of_materials_start_date date,
-    bill_of_materials_end_date date,
     bill_of_materials_bom_level INT NOT NULL,
     bill_of_materials_per_assembly_qty INT NOT NULL,
     bill_of_materials_unit_measure_code varchar(255),
@@ -66,16 +64,8 @@ CREATE TABLE bill_of_materials (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    bill_of_materials_start_date date,
-
-     /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    bill_of_materials_end_date date,
+    bill_of_materials_start_date datetime,
+    bill_of_materials_end_date datetime,
     
 
     /* Product */
@@ -98,9 +88,9 @@ CREATE TABLE bill_of_materials (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -131,16 +121,8 @@ CREATE TABLE special_offer (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    special_offer_start_date date NOT NULL, 
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    special_offer_end_date date NOT NULL, 
+    special_offer_start_date datetime NOT NULL, 
+    special_offer_end_date datetime NOT NULL, 
 
     /* Product */
     product_id int NOT NULL,
@@ -162,9 +144,9 @@ CREATE TABLE special_offer (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -192,7 +174,7 @@ CREATE TABLE bonus (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    bonus_date date NOT NULL,
+    bonus_date datetime NOT NULL,
 
     /* Employee */
     employee_id INT NOT NULL,
@@ -205,8 +187,8 @@ CREATE TABLE bonus (
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -219,7 +201,7 @@ CREATE TABLE bonus (
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -251,7 +233,7 @@ CREATE TABLE employee_pay_history (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    rate_change_date date NOT NULL,
+    rate_change_date datetime NOT NULL,
 
      /* Employee */
     employee_id INT NOT NULL,
@@ -264,8 +246,8 @@ CREATE TABLE employee_pay_history (
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -278,7 +260,7 @@ CREATE TABLE employee_pay_history (
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -307,7 +289,7 @@ CREATE TABLE department_history(
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    bonus_date date NOT NULL,
+    bonus_date datetime NOT NULL,
 
     /* Employee */
     employee_id INT NOT NULL,
@@ -320,8 +302,8 @@ CREATE TABLE department_history(
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -334,7 +316,7 @@ CREATE TABLE department_history(
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -353,7 +335,7 @@ CREATE TABLE department_history(
     change_date TIMESTAMP,
 );
 
-CREATE TABLE employee_pay_history (
+CREATE TABLE employee_pay_history1 (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
     /* Shift */
@@ -374,16 +356,8 @@ CREATE TABLE employee_pay_history (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    start_date date NOT NULL,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    end_date date NOT NULL,
+    start_date datetime NOT NULL,
+    end_date datetime NOT NULL,
 
      /* Employee */
     employee_id INT NOT NULL,
@@ -396,8 +370,8 @@ CREATE TABLE employee_pay_history (
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -410,7 +384,7 @@ CREATE TABLE employee_pay_history (
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -450,7 +424,7 @@ CREATE TABLE transaction_history (
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    transaction_date date NOT NULL,
+    transaction_date datetime NOT NULL,
 
     /* Product */
     product_id int NOT NULL,
@@ -472,9 +446,9 @@ CREATE TABLE transaction_history (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -487,15 +461,12 @@ CREATE TABLE transaction_history (
     product_shelf INT,
     product_bin INT,
     product_quantity INT,
-
-    change_date TIMESTAMP,
-    Forgein key (sales_order_s_key) references sales_order(s_key)
 );
 
 CREATE TABLE sales_territory_history(
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
-    sales_territory_history_business_entity_id varchar(255) NOT NULL
-    sales_territory_history_territory_id INT NOT NULL
+    sales_territory_history_business_entity_id varchar(255) NOT NULL,
+    sales_territory_history_territory_id INT NOT NULL,
 
     /* Date */
     year varchar(4) NOT NULL,
@@ -504,16 +475,9 @@ CREATE TABLE sales_territory_history(
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    end_date date,
+    end_date datetime,
 
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    start_date date NOT NULL,
+    start_date datetime NOT NULL,
 
     /* Employee */
     employee_id varchar(255) NOT NULL,
@@ -526,8 +490,8 @@ CREATE TABLE sales_territory_history(
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -540,7 +504,7 @@ CREATE TABLE sales_territory_history(
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -590,7 +554,7 @@ CREATE TABLE sales_person_quota_history(
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    quota_date date NOT NULL,
+    quota_date datetime NOT NULL,
 
     /* Employee */
     employee_id varchar(255) NOT NULL,
@@ -603,8 +567,8 @@ CREATE TABLE sales_person_quota_history(
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -617,7 +581,7 @@ CREATE TABLE sales_person_quota_history(
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -666,61 +630,13 @@ CREATE TABLE work_order_routing(
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    scheduled_start_date date NOT NULL,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    scheduled_end_date date NOT NULL,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    actual_start_date date,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    actual_end_date date,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    start_date date NOT NULL,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    end_date date,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    due_date date NOT NULL,
+    scheduled_start_date datetime NOT NULL,
+    scheduled_end_date datetime NOT NULL,
+    actual_start_date datetime,
+    actual_end_date datetime,
+    start_date datetime NOT NULL,
+    end_date datetime,
+    due_date datetime NOT NULL,
 
     operations_sequence INT NOT NULL,
     actual_resource_hours DECIMAL(9,4),
@@ -749,9 +665,9 @@ CREATE TABLE work_order_routing(
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -817,9 +733,9 @@ CREATE TABLE purchase_order(
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
@@ -844,8 +760,8 @@ CREATE TABLE purchase_order(
     employee_sales_last_year INT,
     employee_department_head varchar(255),
     employee_department varchar(255),
-    employee_start_date date,
-    employee_birth_date date,
+    employee_start_date datetime,
+    employee_birth_date datetime,
     employee_salary DECIMAL(19,4),
     employee_country varchar(255),
     employee_region varchar(255),
@@ -858,7 +774,7 @@ CREATE TABLE purchase_order(
     employee_life_insurance bit,
     employee_day_care bit,
     employee_sex varchar(1),
-    employee_termination_date date,
+    employee_termination_date datetime,
     employee_title varchar(255),
     employee_title_of_courtesy varchar(255),
     employee_group varchar(255),
@@ -886,7 +802,7 @@ CREATE TABLE purchase_order(
     vendor_name varchar(50) NOT NULL,
     vendor_active_flag bit NOT NULL,
     vendor_purchasing_webservice_url varchar(1024),
-    vendor_preferred_vendor_status bit NOT NULL
+    vendor_preferred_vendor_status bit NOT NULL,
 
     change_date TIMESTAMP,
 )
@@ -903,16 +819,8 @@ CREATE TABLE price_history_shopping_cart(
     day varchar(2) NOT NULL,
     hour varchar(2) NOT NULL,
     minute varchar(2) NOT NULL,
-    start_date date NOT NULL,
-
-    /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
-    end_date date,
+    start_date datetime NOT NULL,
+    end_date datetime,
 
     price_history_shopping_cart_list_price DECIMAL(18,4) NOT NULL,
     price_history_shopping_cart_quantity INT NOT NULL,
@@ -936,9 +844,9 @@ CREATE TABLE price_history_shopping_cart(
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date date,
-    product_sell_end_date date,
-    product_discontinued_date date,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
     product_discontinued bit NOT NULL,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
