@@ -110,4 +110,8 @@ def products_northwind():
     return merge2
 
 def products_aenc():
-    return 0
+    cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    products = get_data(cursor_aenc, 'Product')
+    products = products.loc[:, ['id', 'name', 'description', 'prod_size','color','quantity','unit_price','Category']].rename(columns={'quantity':'Quantity', 'unit_price':'ListPrice','prod_size':'size', 'id':'ProductID','description':'Name','name':'ProductSubCategory','Category':'ProductCategory'})
+    
+    return products
