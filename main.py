@@ -6,7 +6,6 @@ def main():
     nw = products_northwind()
     aenc = products_aenc()
 
-
 def products_adventureworks():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
 
