@@ -2,11 +2,13 @@ import pandas as pd
 from connections import setup_cursors, get_data
 
 def main():
+    aw = products_adventureworks()
+    nw = products_northwind()
+    aenc = products_aenc()
+
+
+def products_adventureworks():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
-    #  cursor_aw = connection_aw.cursor()
-    #     cursor_nw = connection_nw.cursor()
-    #     cursor_aenc = connection_aenc.cursor()
-    #     export_cursor = connection_dw.cursor()
 
     product = get_data(cursor_aw, "Production.Product")
     sub_category = get_data(cursor_aw, "Production.ProductSubcategory")
@@ -30,7 +32,6 @@ def main():
     categories = categories.rename(columns={'Name_x': 'ProductSubCategory', 'Name_y': 'ProductCategory'})
     categories = categories.loc[:, ['ProductSubcategoryID', 'ProductSubCategory', 'ProductCategory']]
     
-
     # Som van alle hoeveelheden gepakt per ProductID, kan ook anders
     inventory = inventory.groupby('ProductID')['Quantity'].sum().reset_index()
     
@@ -80,24 +81,34 @@ def main():
     state_country = state_country.loc[:, ['StateProvinceID', 'Vendor_StateProvinceName', 'Name']].rename(columns={'Name': 'Vendor_CountryName'})
     vendor_info2 = pd.merge(vendor_address2, state_country, left_on='StateProvinceID', right_on='StateProvinceID', how='left')
 
-    aw_products = pd.merge(product3, vendor_info2, left_on='ProductID', right_on='ProductID', how='left')
+    aw_products = pd.merge(product3, vendor_info2, on='ProductID', how='left', suffixes=('_product3', '_vendor_info2'))
+    aw_products['StandardCost_vendor_info2'] = aw_products['StandardCost_vendor_info2'].fillna(0.0000)
+    aw_products['StandardCost'] = aw_products.apply(
+        lambda row: row['StandardCost_vendor_info2'] if int(row['StandardCost_vendor_info2']) != 0 else row['StandardCost_product3'],
+        axis=1)
+
+    aw_products = aw_products.drop(columns=['StandardCost_product3', 'StandardCost_vendor_info2'])
     aw_products['ProductID'] = 'AW_' + aw_products['ProductID'].astype(str)
 
-
+    return aw_products
  
-def main2():
-       # combi tabel van products, suppliers & Categories
+def products_northwind():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
-    product_aenc = get_data(cursor_aenc, "Product")
 
     nw_category = get_data(cursor_nw, "dbo.Categories")
     nw_products = get_data(cursor_nw, "dbo.Products")
     nw_suppliers = get_data(cursor_nw, "dbo.Suppliers")
 
-    nw_product_merge = pd.merge(nw_category, nw_products)
-    nw_product_merge2 = pd.merge(nw_product_merge, nw_suppliers)
-    nw_product_merge3 = pd.merge(nw_product_merge2, product_aenc)
-    nw_product_merge3
+    categories = nw_category.loc[:, ['CategoryID', 'CategoryName']].rename(columns={'CategoryName':'ProductCategory'})
+    products = nw_products.loc[:, ['ProductID', 'ProductName', 'SupplierID', 'CategoryID', 'UnitPrice', 'UnitsInStock', 'ReorderLevel', 'Discontinued']]
+    suppliers = nw_suppliers.loc[:, ['SupplierID', 'CompanyName','Address','City','Country','PostalCode']]
+    
+    merge1 = pd.merge(products, categories)
+    merge2 = pd.merge(merge1, suppliers)
+    merge2 = merge2.loc[:,['ProductID', 'ProductName','UnitPrice','UnitsInStock','ReorderLevel','Discontinued','ProductCategory','CompanyName','Address','City','Country','PostalCode']].rename(columns={'ProductName':'Name','UnitPrice':'ListPrice','UnitsInStock':'Quantity','CompanyName':'VendorName','Address':'Vendor_Address','City':'Vendor_City','PostalCode':'Vendor_PostalCode','Country':'Vendor_CountryName','ReorderLevel':'ReorderPoint'})
 
+    merge2['ProductID'] = 'NW_' + merge2['ProductID'].astype(str)
+    return merge2
 
-
+def products_aenc():
+    return 0
