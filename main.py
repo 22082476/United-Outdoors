@@ -48,11 +48,28 @@ def main():
     address = address.loc[:, ['AddressID', 'AddressLine1', 'City', 'StateProvinceID', 'PostalCode']].rename(columns={'AddressLine1': 'Vendor_Address', 'City': 'Vendor_City', 'PostalCode': 'Vendor_PostalCode'})
     state_province = state_province.loc[:, ['StateProvinceID', 'Name', 'CountryRegionCode']].rename(columns={'Name':'Vendor_StateProvinceName'})
     
-    # Sommige producten hebben meerdere product vendors, moet nog verwerkt worden, ik ben er voor nu ff klaar mee
-    all_vendors = purchase_vendor.loc[:, ['ProductID', 'BusinessEntityID']]
-    all_vendors = all_vendors.drop_duplicates(subset='ProductID', keep='first')
-    vendor_info = pd.merge(all_vendors, vendor, left_on='BusinessEntityID', right_on='BusinessEntityID', how='left')
-    vendor_info = vendor_info.loc[:, ['ProductID', 'BusinessEntityID', 'Name']].rename(columns={'Name':'VendorName'})
+    all_vendors = purchase_vendor.loc[:, ['ProductID', 'BusinessEntityID', 'StandardPrice', 'OnOrderQty']]
+    vendors_merge = pd.merge(all_vendors, vendor, left_on='BusinessEntityID', right_on='BusinessEntityID', how='left')
+    vendors_merge = vendors_merge.loc[:, ['ProductID', 'BusinessEntityID', 'StandardPrice', 'Name', 'ActiveFlag', 'PreferredVendorStatus', 'OnOrderQty']].rename(columns={'Name':'VendorName', 'StandardPrice':'StandardCost'})
+
+    duplicated_product_ids = vendors_merge[vendors_merge.duplicated('ProductID', keep=False)]['ProductID'].unique()
+    duplicated_vendors = vendors_merge[vendors_merge['ProductID'].isin(duplicated_product_ids)]
+    unique_vendors = vendors_merge[~vendors_merge['ProductID'].isin(duplicated_product_ids)]
+
+    duplicated_vendors = duplicated_vendors.sort_values(by=['ProductID', 'BusinessEntityID'])
+    duplicated_vendors = duplicated_vendors.groupby('ProductID').apply(
+        lambda group: group if group['ActiveFlag'].all() and group['PreferredVendorStatus'].all() else group.head(1)
+    ).reset_index(drop=True)
+    vendors_merge_clean_1 = pd.concat([duplicated_vendors, unique_vendors])
+    
+    def remove_nan_onorderqty(group):
+        if group['OnOrderQty'].notna().any():
+            return group.dropna(subset=['OnOrderQty'])
+        return group.head(1)
+    
+    vendors_merge_clean = vendors_merge_clean_1.groupby('ProductID').apply(remove_nan_onorderqty).reset_index(drop=True)
+    vendors_merge_clean = vendors_merge_clean.drop_duplicates(subset='ProductID', keep='first')
+    vendor_info = vendors_merge_clean.loc[:, ['ProductID', 'BusinessEntityID', 'StandardCost', 'VendorName']]
     vendor_address = pd.merge(vendor_info, business_entity_address, left_on='BusinessEntityID', right_on='BusinessEntityID', how='left')
     vendor_address2 = pd.merge(vendor_address, address, left_on='AddressID', right_on='AddressID', how='left')
     state_country = pd.merge(state_province, country_region, left_on='CountryRegionCode', right_on='CountryRegionCode', how='left')
