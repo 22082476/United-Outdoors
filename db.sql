@@ -53,28 +53,26 @@ CREATE TABLE product_review (
 CREATE TABLE bill_of_materials (
     s_key INT IDENTITY(1,1) PRIMARY KEY,
 	bill_of_materials_id INT NOT NULL,
-    bill_of_materials_start_date TIMESTAMP,
-    bill_of_materials_end_date TIMESTAMP,
     bill_of_materials_bom_level INT NOT NULL,
     bill_of_materials_per_assembly_qty INT NOT NULL,
     bill_of_materials_unit_measure_code varchar(255),
 
     /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    start_date_year varchar(4) NOT NULL,
+    start_date_quater varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     bill_of_materials_start_date TIMESTAMP,
 
      /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    end_date_year varchar(4) NOT NULL,
+    end_date_quater varchar(1) NOT NULL,
+    end_date_month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
     bill_of_materials_end_date TIMESTAMP,
     
 
@@ -125,21 +123,21 @@ CREATE TABLE special_offer (
     special_offer_max_qty INT NOT NULL,
     
     /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    start_date_year varchar(4) NOT NULL,
+    start_date_quater varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     special_offer_start_date TIMESTAMP NOT NULL, 
 
     /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    end_date_year varchar(4) NOT NULL,
+    end_date_quater varchar(1) NOT NULL,
+    end_date_month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
     special_offer_end_date TIMESTAMP NOT NULL, 
 
     /* Product */
@@ -353,7 +351,7 @@ CREATE TABLE department_history(
     change_date TIMESTAMP,
 );
 
-CREATE TABLE employee_pay_history (
+CREATE TABLE employee_deparment_history (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
     /* Shift */
@@ -368,21 +366,21 @@ CREATE TABLE employee_pay_history (
     department_name varchar(255) NOT NULL,
     
     /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    start_date_year varchar(4) NOT NULL,
+    start_date_quater varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     start_date TIMESTAMP NOT NULL,
 
     /* Date */
-    year varchar(4) NOT NULL,
-    quater varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    end_date_year varchar(4) NOT NULL,
+    end_date_quater varchar(1) NOT NULL,
+    end_date_month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
     end_date TIMESTAMP NOT NULL,
 
      /* Employee */
@@ -489,5 +487,65 @@ CREATE TABLE transaction_history (
     product_quantity INT,
 
     change_date TIMESTAMP,
-    Forgein key (sales_order_s_key) references sales_order(s_key)
+    FOREIGN KEY (sales_order_s_key) references sales_order(s_key)
+);
+
+CREATE TABLE business_entity_contact (
+    S_KEY INT IDENTITY(1,1) PRIMARY KEY,
+
+    /* Contact Type */
+    contact_type_id INT NOT NULL,
+    contact_type_name varchar(255) NOT NULL,
+
+    /* Vendor */
+    vendor_id INT NOT NULL,
+    vendor_account_number varchar(255) NOT NULL,
+    vendor_name varchar(255) NOT NULL,
+    vendor_purchasing_website varchar(max),
+    vendor_credit_rating INT NOT NULL,
+    vender_preferred_vendor_status varchar(max),
+    vendor_active bit NOT NULL,
+
+    /* Employee */
+    employee_id INT NOT NULL,
+    employee_full_name varchar(255) NOT NULL,
+    employee_ss_number varchar(255),
+    employee_phone_number varchar(255),
+    employee_home_phone_number varchar(255),
+    employee_extention varchar(255),
+    employee_sales_YTD INT,
+    employee_sales_last_year INT,
+    employee_department_head varchar(255),
+    employee_department varchar(255),
+    employee_start_date TIMESTAMP,
+    employee_birth_date TIMESTAMP,
+    employee_salary DECIMAL(19,4),
+    employee_country varchar(255),
+    employee_region varchar(255),
+    employee_city varchar(255),
+    employee_zip_code varchar(255),
+    employee_street_name varchar(255),
+    employee_house_number varchar(10),
+    employee_manager varchar(255),
+    employee_health_insurance bit,
+    employee_life_insurance bit,
+    employee_day_care bit,
+    employee_sex varchar(1),
+    employee_termination_date TIMESTAMP,
+    employee_title varchar(255),
+    employee_title_of_courtesy varchar(255),
+    employee_group varchar(255),
+    employee_territory varchar(255),
+    employee_country_region_code varchar(255),
+    employee_salaried_flag bit,
+    employee_vactions_hours INT,
+    employee_sick_leave_hours INT,
+    employee_martial_status varchar(255),
+    employee_orginanizion_level INT,
+    employee_demographics varchar(255),
+    employee_sales_quota INT,
+    employee_bonus DECIMAL(19,4),
+    employee_commission_pct DECIMAL(19,4),
+    
+    change_date TIMESTAMP,
 );
