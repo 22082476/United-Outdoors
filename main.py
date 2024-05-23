@@ -7,6 +7,13 @@ def main():
     nw = products_northwind()
     aenc = products_aenc()
 
+    for x in aw.columns:
+        print(x)
+    for x in nw.columns:
+        print(x)
+    for x in aenc.columns:
+        print(x)
+
 def products_adventureworks():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
 
