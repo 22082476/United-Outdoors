@@ -6,13 +6,13 @@ def main():
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()
+    
+    merge_1 = pd.merge(aw, nw, how='outer')
+    merge_1['Quantity'] = merge_1['Quantity'].fillna(0)
+    merge_1['Quantity'] = merge_1['Quantity'].astype(int)
+    aenc['Quantity'] = aenc['Quantity'].astype(int)
 
-    for x in aw.columns:
-        print(x)
-    for x in nw.columns:
-        print(x)
-    for x in aenc.columns:
-        print(x)
+    products = pd.merge(merge_1, aenc, how='outer')
 
 def products_adventureworks():
     cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
