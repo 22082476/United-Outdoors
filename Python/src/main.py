@@ -2,7 +2,7 @@ from product import products
 from employee import employee
 
 def main () -> None:
-    products()
+    #products()
     employee()
 
 if __name__ == "__main__":
