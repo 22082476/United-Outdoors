@@ -24,9 +24,6 @@ def products_adventureworks():
     inventory = get_data(cursor_aw, "Production.ProductInventory")
     
     model = get_data(cursor_aw, "Production.ProductModel")
-    description_culture = get_data(cursor_aw, "Production.ProductModelProductDescriptionCulture")
-    description = get_data(cursor_aw, "Production.ProductDescription")
-    culture = get_data(cursor_aw, "Production.Culture")
 
     purchase_vendor = get_data(cursor_aw, 'Purchasing.ProductVendor')
     vendor = get_data(cursor_aw, 'Purchasing.Vendor')
