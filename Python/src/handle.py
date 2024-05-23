@@ -38,12 +38,10 @@ def handleTwo (cursor, source1, source2, method):
     cursor.commit()
     cursor.close()
 
-def handle_insert_single_pk(cursor, destination_table, p_key, data):
-    #destination_table = "order_temp"
-    #cursor = setup_cursor(os.getenv('datawharehouse'))
+def handle_insert_single_pk(cursor, destination_table, p_key, data, p_key2 = None, p_key3 = None, p_key4 = None):
+    # Samengestelde primary keys moet nog ingebouwd worden
     columns_string, fill_string, column_types = get_column_data(cursor, destination_table)
     column_names = columns_string.split(', ')
-    
     for i, r in data.iterrows():
         try:
             cursor.execute(f"SELECT * FROM {destination_table} WHERE {p_key}=?", (r[p_key]))
@@ -64,8 +62,37 @@ def handle_insert_single_pk(cursor, destination_table, p_key, data):
             print(e)
 
     cursor.commit()
+
+def get_column_data(cursor, table):
+    cursor.execute(f"SELECT * FROM {table}")
+    data = cursor.description
+    column_names = get_column_lists(0, data)
+    column_types = get_column_lists(1, data)
+    fill = ['?' for x in range(len(column_names))]
+
+    fill_string = format_strings_list(fill)
+    col_string = format_strings_list(column_names)
+    
+    print(column_types)
+    return col_string, fill_string, column_types
+
+def check_changes(current, new):
+    # Heel lelijk maar werkt voor nu
+    check = False
+    current = list(current)
+    current.pop(0)
+    current.pop(-1)
+
+    current = [validate_data_type(current[x], type(current[x])) for x in range(len(current))]
+    new = [validate_data_type(new[x], type(new[x])) for x in range(len(new))]
+    for x in range(len(current)):
+        check = compare_rows(current[x], new[x])
+        if check:
+            break
+    return check
     
 def validate_data_type(value, data_type):
+    # Heel lelijk maar werkt voor nu
     try:
         if value is None or (isinstance(value, float) and math.isnan(value)) or (isinstance(value, pd._libs.tslibs.nattype.NaTType)):
             return None
@@ -79,40 +106,24 @@ def validate_data_type(value, data_type):
             return str(value)
     except Exception as e:
         raise Exception(f"Incompatible data types: {value}, {data_type} - {e}")
-    
-def check_changes(current, new):
-    current = list(current)
-    current.pop(0)
-    current.pop(-1)
 
-    current = [validate_data_type(current[x], type(current[x])) for x in range(len(current))]
-    new = [validate_data_type(new[x], type(new[x])) for x in range(len(new))]
-    check = compare_rows(current, new)
-    if check:
-        print('helaas')
-        print(current)
-        print(new)
-    return check
-
-def compare_rows(row1, row2):
-    if len(row1) != len(row2):
+def compare_rows(value1, value2):
+    # Heel lelijk maar werkt voor nu
+    if normalize_value(value1) == normalize_value(value2):
         return False
-    for val1, val2 in zip(row1, row2):
-        if normalize_value(val1) != normalize_value(val2):
+    elif value1 == None and value2 == None:
+        return False
+    elif normalize_value(value1) == True or normalize_value(value1) == False or normalize_value(value2) == False or normalize_value(value2) == True:
+        if normalize_value(value1) == bool(value2):
+            if value2 in [0, 1]:
+                return False
+        if normalize_value(value2) == bool(value1):
+            if value1 in [0, 1]:
+                return False
+    elif bool(value1) == bool(value2):
+        if value1 in [0, 1] and value2 in [0, 1]:
             return False
     return True
-
-def get_column_data(cursor, table):
-    cursor.execute(f"SELECT * FROM {table}")
-    data = cursor.description
-    column_names = get_column_lists(0, data)
-    column_types = get_column_lists(1, data)
-    fill = ['?' for x in range(len(column_names))]
-
-    fill_string = format_strings_list(fill)
-    col_string = format_strings_list(column_names)
-    
-    return col_string, fill_string, column_types
 
 def read(cursor, table, where):
     try:

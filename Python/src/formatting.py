@@ -13,9 +13,16 @@ def format_strings_list(input):
     return output
 
 def normalize_value(value):
-    if isinstance(value, (int, float, str)) and value is not None:
-        try:
-            return float(value)
-        except ValueError:
-            pass 
-    return value
+    if isinstance(value, str):
+        if value.lower() == 'true':
+            return True
+        elif value.lower() == 'false':
+            return False
+    try:
+        return float(value)
+    except:
+        pass
+    return value 
+
+
+    
