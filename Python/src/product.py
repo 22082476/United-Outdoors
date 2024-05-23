@@ -1,13 +1,54 @@
 import pandas as pd
 from handle import setup_cursor, get_data
 from dotenv import load_dotenv
-
 load_dotenv('.env')
-
 import os
 
+RENAME_DICT = {
+    'ProductID': 'product_id',
+    'Name': 'product_name',
+    'ProductNumber': 'product_number',
+    'MakeFlag': 'product_make_flag',
+    'FinishedGoodsFlag': 'product_finished_goods_flag',
+    'Color': 'product_color',
+    'SafetyStockLevel': 'product_safety_stock_level',
+    'ReorderPoint': 'product_reorder_point',
+    'ListPrice': 'product_list_price',
+    'Size': 'product_size',
+    'SizeUnitMeasureCode': 'product_size_unit_measure_code',
+    'WeightUnitMeasureCode': 'product_weight_unit_measure_code',
+    'Weight': 'product_weight',
+    'DaysToManufacture': 'product_days_to_manufacture',
+    'ProductLine': 'product_line',
+    'Class': 'product_class',
+    'Style': 'product_style',
+    'ProductSubcategoryID': 'product_subcategory_id',
+    'ProductModelID': 'product_model_id',
+    'SellStartDate': 'product_sell_start_date',
+    'SellEndDate': 'product_sell_end_date',
+    'DiscontinuedDate': 'product_discontinued_date',
+    'rowguid': 'rowguid',  
+    'ModifiedDate': 'change_date',  
+    'ModelName': 'product_model',  
+    'Quantity': 'product_quantity',
+    'ProductSubCategory': 'product_subcategory',  
+    'ProductCategory': 'product_category',
+    'BusinessEntityID': 'business_entity_id',
+    'VendorName': 'product_vendor_name',
+    'AddressID': 'address_id',
+    'Vendor_Address': 'product_vendor_address',
+    'Vendor_City': 'product_vendor_city',
+    'StateProvinceID': 'state_province_id',
+    'Vendor_PostalCode': 'product_vendor_postal_code',
+    'Vendor_StateProvinceName': 'product_vendor_state_province_name',
+    'Vendor_CountryName': 'product_vendor_country',
+    'StandardCost': 'product_standard_cost',
+    'Discontinued': 'product_discontinued'
+}
+
 def products():
-    #Merge the fuckers
+    export_cursor = setup_cursor(os.getenv('datawharehouse'))
+
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()
@@ -18,11 +59,13 @@ def products():
     aenc['Quantity'] = aenc['Quantity'].astype(int)
 
     products = pd.merge(merge_1, aenc, how='outer')
+    products.rename(columns=RENAME_DICT, inplace=True)
+    products = products.drop(['rowguid','state_province_id','address_id','business_entity_id','product_subcategory_id','change_date','product_vendor_state_province_name','product_model_id'], axis=1)
     print(products)
+    # Add export/write stuff
 
 def products_adventureworks():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
-    export_cursor = setup_cursor(os.getenv("datawharehouse"))
 
     product = get_data(cursor_aw, "Production.Product")
     sub_category = get_data(cursor_aw, "Production.ProductSubcategory")
@@ -31,9 +74,6 @@ def products_adventureworks():
     inventory = get_data(cursor_aw, "Production.ProductInventory")
     
     model = get_data(cursor_aw, "Production.ProductModel")
-    description_culture = get_data(cursor_aw, "Production.ProductModelProductDescriptionCulture")
-    description = get_data(cursor_aw, "Production.ProductDescription")
-    culture = get_data(cursor_aw, "Production.Culture")
 
     purchase_vendor = get_data(cursor_aw, 'Purchasing.ProductVendor')
     vendor = get_data(cursor_aw, 'Purchasing.Vendor')
@@ -101,7 +141,6 @@ def products_adventureworks():
  
 def products_northwind():
     cursor_nw = setup_cursor(os.getenv('northwind'))
-    export_cursor = setup_cursor(os.getenv('datawharehouse'))
 
     nw_category = get_data(cursor_nw, "dbo.Categories")
     nw_products = get_data(cursor_nw, "dbo.Products")
@@ -120,7 +159,6 @@ def products_northwind():
 
 def products_aenc():
     cursor_aenc = setup_cursor(os.getenv('aenc'))
-    export_cursor = setup_cursor(os.getenv('datawharehouse'))
     
     products = get_data(cursor_aenc, 'Product')
     products = products.loc[:, ['id', 'name', 'description', 'prod_size','color','quantity','unit_price','Category']].rename(columns={'quantity':'Quantity', 'unit_price':'ListPrice','prod_size':'Size', 'id':'ProductID','description':'Name','name':'ProductSubCategory','Category':'ProductCategory', 'color':'Color'})
