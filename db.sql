@@ -753,14 +753,21 @@ CREATE TABLE sales_territory_history(
     sales_territory_history_territory_id INT NOT NULL,
 
     /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    end_date_year varchar(4) NOT NULL,
+    end_date_quarter varchar(1) NOT NULL,
+    end_date_month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
     end_date datetime,
 
+    /* Date */
+    start_date_year varchar(4) NOT NULL,
+    start_date_quarter varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     start_date datetime NOT NULL,
 
     /* Employee */
@@ -814,7 +821,7 @@ CREATE TABLE sales_territory_history(
     sales_territory_cost_ytd DECIMAL(19,4) NOT NULL,
     sales_territory_cost_last_year DECIMAL(19,4) NOT NULL,
 
-    /*country_region_customer*/
+    /*country_region_currency*/
     country_region_currency_currency_code varchar(3) NOT NULL,
     country_region_currency_country_region_code varchar(3) NOT NULL,
 
@@ -891,7 +898,7 @@ CREATE TABLE sales_person_quota_history(
     sales_territory_cost_ytd DECIMAL(19,4) NOT NULL,
     sales_territory_cost_last_year DECIMAL(19,4) NOT NULL,
 
-    /*country_region_customer*/
+    /*country_region_currency*/
     country_region_currency_currency_code varchar(3) NOT NULL,
     country_region_currency_country_region_code varchar(3) NOT NULL,
 
@@ -908,18 +915,66 @@ CREATE TABLE work_order_routing(
     work_order_id INT NOT NULL,
 
      /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    scheduled_start_date_year varchar(4) NOT NULL,
+    scheduled_start_date_quarter varchar(1) NOT NULL,
+    scheduled_start_date_month varchar(2) NOT NULL,
+    scheduled_start_date_day varchar(2) NOT NULL,
+    scheduled_start_date_hour varchar(2) NOT NULL,
+    scheduled_start_date_minute varchar(2) NOT NULL,
     scheduled_start_date datetime NOT NULL,
+
+    /* Date */
+    scheduled_end_date_year varchar(4) NOT NULL,
+    scheduled_end_date_quarter varchar(1) NOT NULL,
+    scheduled_end_date_month varchar(2) NOT NULL,
+    scheduled_end_date_day varchar(2) NOT NULL,
+    scheduled_end_date_hour varchar(2) NOT NULL,
+    scheduled_end_date_minute varchar(2) NOT NULL,
     scheduled_end_date datetime NOT NULL,
+
+    /* Date */
+    actual_start_date_year varchar(4) NOT NULL,
+    actual_start_date_quarter varchar(1) NOT NULL,
+    actual_start_date_month varchar(2) NOT NULL,
+    actual_start_date_day varchar(2) NOT NULL,
+    actual_start_date_hour varchar(2) NOT NULL,
+    actual_start_date_minute varchar(2) NOT NULL,
     actual_start_date datetime,
+
+    /* Date */
+    actual_end_date_year varchar(4) NOT NULL,
+    actual_end_date_quarter varchar(1) NOT NULL,
+    actual_end_date_month varchar(2) NOT NULL,
+    actual_end_date_day varchar(2) NOT NULL,
+    actual_end_date_hour varchar(2) NOT NULL,
+    actual_end_date_minute varchar(2) NOT NULL,
     actual_end_date datetime,
+
+    /* Date */
+    start_date_year varchar(4) NOT NULL,
+    start_date_quarter varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     start_date datetime NOT NULL,
+
+    /* Date */
+    end_date_year varchar(4) NOT NULL,
+    end_date_quarter varchar(1) NOT NULL,
+    end_date_ month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
     end_date datetime,
+
+    /* Date */
+    due_date_year varchar(4) NOT NULL,
+    due_date_quarter varchar(1) NOT NULL,
+    due_date_month varchar(2) NOT NULL,
+    due_date_day varchar(2) NOT NULL,
+    due_date_hour varchar(2) NOT NULL,
+    due_date_minute varchar(2) NOT NULL,
     due_date datetime NOT NULL,
 
     operations_sequence INT NOT NULL,
@@ -997,6 +1052,24 @@ CREATE TABLE purchase_order(
     tax_amt DECIMAL(18,4) NOT NULL,
     freight DECIMAL(18,4) NOT NULL,
     total_due DECIMAL(18,4) NOT NULL,
+
+     /* Date */
+    order_date_year varchar(4) NOT NULL,
+    order_date_quarter varchar(1) NOT NULL,
+    order_date_month varchar(2) NOT NULL,
+    order_date_day varchar(2) NOT NULL,
+    order_date_hour varchar(2) NOT NULL,
+    order_date_minute varchar(2) NOT NULL,
+    order_date DATETIME NOT NULL,
+
+     /* Date */
+    ship_date_year varchar(4) NOT NULL,
+    ship_date_quarter varchar(1) NOT NULL,
+    ship_date_month varchar(2) NOT NULL,
+    ship_date_day varchar(2) NOT NULL,
+    ship_date_hour varchar(2) NOT NULL,
+    ship_date_minute varchar(2) NOT NULL,
+    ship_date DATETIME NOT NULL,
 
     /* Product */
     product_id VARCHAR(255) NOT NULL,
@@ -1093,18 +1166,25 @@ CREATE TABLE purchase_order(
 
 CREATE TABLE price_history_shopping_cart(
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
-    price_history_shopping_cart_product_id varchar(255) NOT NULL,
     price_history_shopping_cart_item_id INT NOT NULL,
 
     /* Date */
-    year varchar(4) NOT NULL,
-    quarter varchar(1) NOT NULL,
-    month varchar(2) NOT NULL,
-    day varchar(2) NOT NULL,
-    hour varchar(2) NOT NULL,
-    minute varchar(2) NOT NULL,
+    start_date_year varchar(4) NOT NULL,
+    start_date_quarter varchar(1) NOT NULL,
+    start_date_month varchar(2) NOT NULL,
+    start_date_day varchar(2) NOT NULL,
+    start_date_hour varchar(2) NOT NULL,
+    start_date_minute varchar(2) NOT NULL,
     start_date datetime NOT NULL,
-    end_date datetime,
+
+    /* Date */
+    end_date_year varchar(4) NOT NULL,
+    end_date_quarter varchar(1) NOT NULL,
+    end_date_month varchar(2) NOT NULL,
+    end_date_day varchar(2) NOT NULL,
+    end_date_hour varchar(2) NOT NULL,
+    end_date_minute varchar(2) NOT NULL,
+    end_date datetime NOT NULL,
 
     price_history_shopping_cart_list_price DECIMAL(18,4) NOT NULL,
     price_history_shopping_cart_quantity INT NOT NULL,
