@@ -12,7 +12,7 @@ CREATE TABLE product_review (
     review_date DATETIME NOT NULL, 
 
     /* Product t */
-    product_id int NOT NULL,
+    product_id varchar(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -54,8 +54,8 @@ CREATE TABLE bill_of_materials (
     s_key INT IDENTITY(1,1) PRIMARY KEY,
 	bill_of_materials_id INT NOT NULL,
     bill_of_materials_bom_level INT NOT NULL,
-    bill_of_materials_per_assembly_qty INT NOT NULL,
-    bill_of_materials_unit_measure_code varchar(255),
+    bill_of_materials_per_assembly_qty DECIMAL(8,2) NOT NULL,
+    bill_of_materials_unit_measure_code varchar(3),
 
     /* Date */
     start_date_year varchar(4) NOT NULL,
@@ -77,7 +77,7 @@ CREATE TABLE bill_of_materials (
     
 
     /* Product */
-    product_id int NOT NULL,
+    product_id varchar(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -141,7 +141,7 @@ CREATE TABLE special_offer (
     special_offer_end_date DATETIME NOT NULL, 
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -193,7 +193,7 @@ CREATE TABLE bonus (
     bonus_date DATETIME NOT NULL,
 
     /* Employee */
-    employee_id INT NOT NULL,
+    employee_id VARCHAR(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
     employee_ss_number varchar(255),
     employee_phone_number varchar(255),
@@ -238,7 +238,7 @@ CREATE TABLE bonus (
 
 CREATE TABLE employee_pay_history (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
-    business_entity_id INT NOT NULL,
+    business_entity_id VARCHAR(255) NOT NULL,
     rate DECIMAL(19,4) NOT NULL,
     pay_frequency INT NOT NULL,
 
@@ -252,7 +252,7 @@ CREATE TABLE employee_pay_history (
     rate_change_date DATETIME NOT NULL,
 
      /* Employee */
-    employee_id INT NOT NULL,
+    employee_id VARCHAR(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
     employee_ss_number varchar(255),
     employee_phone_number varchar(255),
@@ -328,7 +328,7 @@ CREATE TABLE employee_deparment_history (
     end_date DATETIME NOT NULL,
 
      /* Employee */
-    employee_id INT NOT NULL,
+    employee_id VARCHAR(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
     employee_ss_number varchar(255),
     employee_phone_number varchar(255),
@@ -378,7 +378,7 @@ CREATE TABLE sales_order (
     line_id varchar(255) NOT NULL,
     unit_price DECIMAL(19,4) NOT NULL,
     quantity INT NOT NULL,
-    freight varchar(255),
+    freight DECIMAL(19,4) NOT NULL,
     sub_total DECIMAL(19,4) NOT NULL,
     tax_amt DECIMAL(19,4),
     total_due DECIMAL(19,4) NOT NULL,
@@ -414,7 +414,7 @@ CREATE TABLE sales_order (
     currency_rate_date DATETIME,
 
     /* Customer */
-    customer_id INT NOT NULL,
+    customer_id VARCHAR(255) NOT NULL,
     customer_full_name varchar(255) NOT NULL,
     customer_person_type varchar(255),
     customer_name_style varchar(255),
@@ -446,7 +446,7 @@ CREATE TABLE sales_order (
     ship_to_address_city varchar(255),
     ship_to_address_postalcode varchar(255),
     ship_to_address_street varchar(255),
-    ship_to_address varchar(255),
+    ship_to_address varchar(255) NOT NULL,
 
     /* Address */
     bill_to_address_country varchar(255),
@@ -454,7 +454,7 @@ CREATE TABLE sales_order (
     bill_to_address_city varchar(255),
     bill_to_address_postalcode varchar(255),
     bill_to_address_street varchar(255),
-    bill_to_address varchar(255),
+    bill_to_address varchar(255) NOT NULL,
 
     /* Shipmethod */
     shipmethod_id INT NOT NULL,
@@ -523,7 +523,7 @@ CREATE TABLE sales_order (
     employee_commission_pct DECIMAL(19,4),
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -586,7 +586,7 @@ CREATE TABLE transaction_history (
     transaction_date DATETIME NOT NULL,
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -638,7 +638,7 @@ CREATE TABLE business_entity_contact (
     vendor_name varchar(255) NOT NULL,
     vendor_purchasing_website varchar(max),
     vendor_credit_rating INT NOT NULL,
-    vender_preferred_vendor_status varchar(max),
+    vender_preferred_vendor_status bit NOT NULL,
     vendor_active bit NOT NULL,
 
     /* Employee */
@@ -688,7 +688,7 @@ CREATE TABLE business_entity_contact (
 CREATE TABLE product_cost_history (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
-    stander_cost DECIMAL(19,4) NOT NULL,
+    standard_cost DECIMAL(19,4) NOT NULL,
 
     /* Date */
     start_date_year varchar(4) NOT NULL,
@@ -706,10 +706,10 @@ CREATE TABLE product_cost_history (
     end_date_day varchar(2) NOT NULL,
     end_date_hour varchar(2) NOT NULL,
     end_date_minute varchar(2) NOT NULL,
-    end_date DATETIME NOT NULL,
+    end_date DATETIME,
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_description varchar(max),
@@ -986,7 +986,7 @@ CREATE TABLE work_order_routing(
     scrapped_qty INT NOT NULL,
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_make_flag INT,
@@ -1072,7 +1072,7 @@ CREATE TABLE purchase_order(
     ship_date DATETIME NOT NULL,
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_make_flag INT,
@@ -1190,7 +1190,7 @@ CREATE TABLE price_history_shopping_cart(
     price_history_shopping_cart_quantity INT NOT NULL,
 
     /* Product */
-    product_id int NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
     product_make_flag INT,
