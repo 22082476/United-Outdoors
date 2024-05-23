@@ -1,55 +1,59 @@
 import pyodbc
+import pandas as pd
 
-def handleOne (DB, source, method):
-    export_conn = pyodbc.connect('DRIVER={SQL server};SERVER=' + DB['servername'] + ';DATABASE=' + DB['database'] + ';Trusted_Connection=yes')
-    export_cursor = export_conn.cursor()
-    export_cursor
-    
+def setup_cursor(connection):
+    connection = pyodbc.connect(connection)
+
+    cursor = connection.cursor()
+
+    return cursor
+
+def handleOne (cursor, source, method):   
     for index, row in source.iterrows():
 
         try :
             vlaai = method(index, row)
-            export_cursor.execute(vlaai)
+            cursor.execute(vlaai)
         except pyodbc.Error:
             print(vlaai)
 
 
-    export_conn.commit()  
-    export_cursor.close() 
+    cursor.commit()  
+    cursor.close() 
 
-def handleTwo (DB, source1, source2, method):
-    export_conn = pyodbc.connect('DRIVER={SQL server};SERVER=' + DB['servername'] + ';DATABASE=' + DB['database'] + ';Trusted_Connection=yes')
-    export_cursor = export_conn.cursor()
-    export_cursor
-
+def handleTwo (cursor, source1, source2, method):
     for index1, row1 in source1.iterrows():
 
         for index, row in source2.iterrows():
 
             try :
                 vlaai = method(index1, index, row1, row)
-                export_cursor.execute(vlaai)
+                cursor.execute(vlaai)
             except pyodbc.Error:
                 print(vlaai)    
 
 
-    export_conn.commit()  
-    export_cursor.close()
+    cursor.commit()
+    cursor.close()
 
-def read(DB, table, where):
-    export_conn = pyodbc.connect('DRIVER={SQL server};SERVER=' + DB['servername'] + ';DATABASE=' + DB['database'] + ';Trusted_Connection=yes')
-    export_cursor = export_conn.cursor()
-
+def read(cursor, table, where):
     try:
-        query = f"SELECT MAX(S_KEY) FROM {table} WHERE {where}"
-        export_cursor.execute(query)
-        result = export_cursor.fetchall()
+        query = f"SELECT MAX(S_KEY) FROM {0} WHERE {1}", table , where
+        cursor.execute(query)
+        result = cursor.fetchall()
     except pyodbc.Error:
-        print(query)
+        print(query)  
         result = None
 
-    export_cursor.close()
-    export_conn.commit()
-    export_conn.close()
+    cursor.commit()
+    cursor.close()
 
     return result[0][0]
+
+def get_data(cursor, name):
+    cursor.execute(f"SELECT * FROM " + name)
+    rows = cursor.fetchall()
+    column_names = [desc[0] for desc in cursor.description]
+    rows_as_tuples = [tuple(row) for row in rows]
+    data = pd.DataFrame(rows_as_tuples, columns=column_names)
+    return data

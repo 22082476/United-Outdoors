@@ -1,7 +1,7 @@
-from processor import procces
+from product import products
 
 def main () -> None:
-    procces()
+    products()
 
 if __name__ == "__main__":
     main()    

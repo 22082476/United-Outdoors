@@ -1,7 +1,12 @@
 import pandas as pd
-from connections import setup_cursors, get_data
+from handle import setup_cursor, get_data
+from dotenv import load_dotenv
 
-def main():
+load_dotenv('.env')
+
+import os
+
+def products():
     #Merge the fuckers
     aw = products_adventureworks()
     nw = products_northwind()
@@ -13,9 +18,11 @@ def main():
     aenc['Quantity'] = aenc['Quantity'].astype(int)
 
     products = pd.merge(merge_1, aenc, how='outer')
+    print(products)
 
 def products_adventureworks():
-    cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    cursor_aw = setup_cursor(os.getenv("adventureworks"))
+    export_cursor = setup_cursor(os.getenv("datawharehouse"))
 
     product = get_data(cursor_aw, "Production.Product")
     sub_category = get_data(cursor_aw, "Production.ProductSubcategory")
@@ -93,7 +100,8 @@ def products_adventureworks():
     return aw_products
  
 def products_northwind():
-    cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    cursor_nw = setup_cursor(os.getenv('northwind'))
+    export_cursor = setup_cursor(os.getenv('datawharehouse'))
 
     nw_category = get_data(cursor_nw, "dbo.Categories")
     nw_products = get_data(cursor_nw, "dbo.Products")
@@ -111,7 +119,9 @@ def products_northwind():
     return merge2
 
 def products_aenc():
-    cursor_aw, cursor_nw, cursor_aenc, export_cursor = setup_cursors()
+    cursor_aenc = setup_cursor(os.getenv('aenc'))
+    export_cursor = setup_cursor(os.getenv('datawharehouse'))
+    
     products = get_data(cursor_aenc, 'Product')
     products = products.loc[:, ['id', 'name', 'description', 'prod_size','color','quantity','unit_price','Category']].rename(columns={'quantity':'Quantity', 'unit_price':'ListPrice','prod_size':'Size', 'id':'ProductID','description':'Name','name':'ProductSubCategory','Category':'ProductCategory', 'color':'Color'})
     products['ProductID'] = 'AC_' + products['ProductID'].astype(str)
