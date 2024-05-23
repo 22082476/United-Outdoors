@@ -1,5 +1,5 @@
 import pandas as pd
-from handle import setup_cursor, get_data
+from handle import setup_cursor, get_data, handle_insert_single_pk
 from dotenv import load_dotenv
 load_dotenv('.env')
 import os
@@ -61,8 +61,10 @@ def products():
     products = pd.merge(merge_1, aenc, how='outer')
     products.rename(columns=RENAME_DICT, inplace=True)
     products = products.drop(['rowguid','state_province_id','address_id','business_entity_id','product_subcategory_id','change_date','product_vendor_state_province_name','product_model_id'], axis=1)
-    print(products)
+    
     # Add export/write stuff
+    handle_insert_single_pk(export_cursor, "order_temp", "product_id", products)
+    
 
 def products_adventureworks():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
