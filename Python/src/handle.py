@@ -41,6 +41,7 @@ def read(cursor, table, where):
         query = f"SELECT MAX(S_KEY) FROM {0} WHERE {1}", table , where
         cursor.execute(query)
         result = cursor.fetchall()
+        result = result[0][0]
     except pyodbc.Error:
         print(query)  
         result = None
@@ -48,7 +49,7 @@ def read(cursor, table, where):
     cursor.commit()
     cursor.close()
 
-    return result[0][0]
+    return result
 
 def get_data(cursor, name):
     cursor.execute(f"SELECT * FROM " + name)
