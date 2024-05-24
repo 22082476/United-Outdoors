@@ -37,12 +37,12 @@ class Employee:
         self.employee_group = employee_group
         self.employee_territory = employee_territory
         self.employee_country_region_code = employee_country_region_code
-        self.employee_salaried_flag = employee_salaried_flag
+        self.employee_salaried_flag = employee_salaried_flag #is dit niet overbodig? zegt niks namelijk
         self.employee_vactions_hours = employee_vactions_hours
         self.employee_sick_leave_hours = employee_sick_leave_hours
         self.employee_martial_status = employee_martial_status
         self.employee_orginanizion_level = employee_orginanizion_level
-        self.employee_demographics = employee_demographics
+        self.employee_demographics = employee_demographics #waar moet het vandaan komen?
         self.employee_sales_quota = employee_sales_quota
         self.employee_bonus = employee_bonus
         self.employee_commission_pct = employee_commission_pct
@@ -111,7 +111,17 @@ def adventure_employee ():
     adventure.drop(['FirstName', "CurrentFlag", "Rate", "PayFrequency", "IsOnlyStateProvinceFlag", "rowguid", "ModifiedDate_y", "ModifiedDate_x", "MiddleName", 'LastName', "Suffix", "NationalIDNumber", "PersonType", "OrganizationNode", "LoginID", "EmailPromotion", "NameStyle", "Title", "BusinessEntityID"], axis=1, inplace=True)
     adventure.rename(columns={"Gender":"sex"})
 
-    print(adventure.columns)
+    print(adventure.columns)   
+    print(len(adventure))
+    
+    employees = []
+
+    for index, row in adventure.iterrows():
+        employees.append(Employee(row["emp_id"], row["full_name"], None, phone, None, None, row["SalesYTD"], row["SalesLast"], None, row["departnement"], row["HireDate"], None, row["salary"], row["country"], region, row["City"], row["PostalCode"], row["AddressLine1"], housenumber, manager, None, None, None, row["Gender"], end_date, row["JobTitle"], suffix, None, row["territory"], ter_country, row["SalariedFlag"], row["VacationHours"], row["SickLeaveHours"], row["MaritalStatus"], row["OrganizationLevel"], demogrpahics, row["SalesQuota"], row["Bonus"], row["CommissionPct"]))
+
+    print(len(employees))
+
+    #print(adventure.columns)
 
 
 
@@ -132,7 +142,17 @@ def aenc_employee ():
     aenc.rename(columns={"steet": "address", "zip_code": "postal_code", "dept_name":"department"}, inplace=True)
     aenc.drop(['emp_fname', 'emp_lname', "manager_id", "dept_head_id"], axis=1, inplace=True)
 
-    return aenc
+    #print(aenc.columns)
+    #print(len(aenc))
+    
+    employees = []
+
+    for index, row in aenc.iterrows():
+        employees.append(Employee(row["emp_id"], row["full_name"], row["ss_number"], row["phone"], None, None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], None, row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None, None, None))
+    
+    #print(len(employees))
+
+    return employees
 
 
 
@@ -150,7 +170,18 @@ def northwind_employee ():
     northwind["full_name"] = northwind["FirstName"] + " " + northwind["LastName"]
     northwind["manager"] = northwind.apply(lambda row: northwind.loc[northwind['EmployeeID'] == row['ReportsTo'], 'full_name'].values[0] if pd.notnull(row['ReportsTo']) else None, axis=1)
     northwind["EmployeeID"] = "NW_" + northwind["EmployeeID"].astype(str)
+    northwind["house_number"] = northwind["Address"].apply(lambda x: x.split(" ")[0])
     northwind.drop(['FirstName', 'LastName', 'ReportsTo', "Photo", "Notes", "RegionID", "Region"], axis=1, inplace=True)
     northwind.rename(columns={"Address": "address", "PostalCode": "postal_code", "EmployeeID":"emp_id", "HireDate": "start_date", "BirthDate":"birth_date", "City": "city", "Country":"country", "Region":"region", "HomePhone":"home_phone", "Title":"title", "TitleOfCourtesy":"title_of_courtesy", "RegionDescription":"region"}, inplace=True)
 
-    return northwind
+    #print(northwind.columns)
+    #print(len(northwind))
+
+    employees = []
+
+    for index, row in northwind.iterrows():
+        employees.append(Employee(row["emp_id"], row["full_name"], None, None, row["home_phone"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], row["house_number"], row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None, None, None))
+
+    #print(len(employees))
+
+    return employees
