@@ -60,9 +60,13 @@ def get_column_data(cursor, table):
     return col_string, fill_string, column_types
 
 def check_changes(current, new, types):
+    # De eerste en laatste waarde worden weggehaald want dit zijn de s_key en timestamp
     current = current[1:-1]
     current = [validate_data_type(current[x], types[x]) for x in range(len(current))]
     new = [validate_data_type(new[y], types[y]) for y in range(len(new))]
+    if len(current) != len(new):
+        raise Exception(F"De lengte van de opgegeven data en de data uit de datawarehouse komen niet overeen. Geef je per ongeluk de s_key of timestamp mee in je dataframe?")
+    
     return any(not compare_rows(c, n) for c, n in zip(current, new))
     
 def validate_data_type(value, data_type):
