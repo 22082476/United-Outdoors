@@ -1,9 +1,51 @@
 from dotenv import load_dotenv
 import pandas as pd
 import os
+import numpy as np
 from handle import get_data, setup_cursor
 load_dotenv('.env')
 
+class Employee:
+    def __init__(self, employee_id, employee_full_name, employee_ss_number, employee_phone_number, employee_home_phone_number, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_salaried_flag, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_demographics, employee_sales_quota, employee_bonus, employee_commission_pct):
+        self.employee_id = employee_id
+        self.employee_full_name = employee_full_name
+        self.employee_ss_number = employee_ss_number
+        self.employee_phone_number = employee_phone_number
+        self.employee_home_phone_number = employee_home_phone_number
+        self.employee_extention = employee_extention
+        self.employee_sales_YTD = employee_sales_YTD
+        self.employee_sales_last_year = employee_sales_last_year
+        self.employee_department_head = employee_department_head
+        self.employee_department = employee_department
+        self.employee_start_date = employee_start_date
+        self.employee_birth_date = employee_birth_date
+        self.employee_salary = employee_salary
+        self.employee_country = employee_country
+        self.employee_region = employee_region
+        self.employee_city = employee_city
+        self.employee_zip_code = employee_zip_code
+        self.employee_street_name = employee_street_name
+        self.employee_house_number = employee_house_number
+        self.employee_manager = employee_manager
+        self.employee_health_insurance = employee_health_insurance
+        self.employee_life_insurance = employee_life_insurance
+        self.employee_day_care = employee_day_care
+        self.employee_sex = employee_sex
+        self.employee_termination_date = employee_termination_date
+        self.employee_title = employee_title
+        self.employee_title_of_courtesy = employee_title_of_courtesy
+        self.employee_group = employee_group
+        self.employee_territory = employee_territory
+        self.employee_country_region_code = employee_country_region_code
+        self.employee_salaried_flag = employee_salaried_flag
+        self.employee_vactions_hours = employee_vactions_hours
+        self.employee_sick_leave_hours = employee_sick_leave_hours
+        self.employee_martial_status = employee_martial_status
+        self.employee_orginanizion_level = employee_orginanizion_level
+        self.employee_demographics = employee_demographics
+        self.employee_sales_quota = employee_sales_quota
+        self.employee_bonus = employee_bonus
+        self.employee_commission_pct = employee_commission_pct
 
 
 def employee ():
@@ -47,7 +89,7 @@ def adventure_employee ():
     
 
     adventure = pd.merge(adventure_person, adventure_employee, on='BusinessEntityID', how='inner')
-    adventure = pd.merge(adventure, adventure_salesperson, on='BusinessEntityID', how='inner')
+    adventure = pd.merge(adventure, adventure_salesperson, on='BusinessEntityID', how='outer')
     adventure = pd.merge(adventure, adventure_payhistory, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_department_history, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_department, on='DepartmentID', how='inner')
@@ -56,13 +98,20 @@ def adventure_employee ():
     adventure = pd.merge(adventure, adventure_stateprovince, on='StateProvinceID', how='inner')
     adventure = pd.merge(adventure, adventure_countryregion, on='CountryRegionCode', how='inner')
     adventure.rename(columns={"Name": "country"}, inplace=True)
-    adventure = pd.merge(adventure, adventure_salesterritory_history, on='BusinessEntityID', how='inner')
-    adventure = pd.merge(adventure, adventure_salesterritory, on='TerritoryID', how='inner')
+    adventure = pd.merge(adventure, adventure_salesterritory_history, on='BusinessEntityID', how='outer')
+    adventure = pd.merge(adventure, adventure_salesterritory, on='TerritoryID', how='outer')
     adventure.rename(columns={"Name": "territory"}, inplace=True)
-    #adventure = pd.merge(adventure, adventure_salesstore, on='BusinessEntityID', how='inner')
-    adventure = pd.merge(adventure, adventure_person_phone, on='BusinessEntityID', how='inner')
+    #adventure = pd.merge(adventure, adventure_salesstore, left_on='BusinessEntityID', right_on='SalesPersonID', how='inner') Demographics mss veranderen
+    #adventure = pd.merge(adventure, adventure_person_phone, on='BusinessEntityID', how='inner')
     
-    print(adventure)
+    adventure["full_name"] = adventure["FirstName"]+ " " + adventure["MiddleName"] + " " + adventure["LastName"]
+    adventure["manager"] = None
+    adventure["salary"] = adventure["Rate"] * 36
+    adventure["emp_id"] = "AW_" + adventure["BusinessEntityID"].astype(str)
+    adventure.drop(['FirstName', "CurrentFlag", "Rate", "PayFrequency", "IsOnlyStateProvinceFlag", "rowguid", "ModifiedDate_y", "ModifiedDate_x", "MiddleName", 'LastName', "Suffix", "NationalIDNumber", "PersonType", "OrganizationNode", "LoginID", "EmailPromotion", "NameStyle", "Title", "BusinessEntityID"], axis=1, inplace=True)
+    adventure.rename(columns={"Gender":"sex"})
+
+    print(adventure.columns)
 
 
 
@@ -80,7 +129,7 @@ def aenc_employee ():
     aenc["department_head"] = aenc.apply(lambda row: aenc.loc[aenc['emp_id'] == row['dept_head_id'], 'full_name'].values[0] if pd.notnull(row['manager_id']) else None, axis=1)
     aenc["region"] = aenc["region"].apply(lambda x: "Southern" if x == "South" else x)
     aenc["emp_id"] = "AC_" + aenc["emp_id"].astype(str)
-    aenc.rename(columns={"steet": "address", "zip_code": "postal_code", "dept_name":"department", }, inplace=True)
+    aenc.rename(columns={"steet": "address", "zip_code": "postal_code", "dept_name":"department"}, inplace=True)
     aenc.drop(['emp_fname', 'emp_lname', "manager_id", "dept_head_id"], axis=1, inplace=True)
 
     return aenc
