@@ -12,7 +12,7 @@ def customers():
     merge1 =  pd.merge(aw, nw, how='outer')
     customers = pd.merge(merge1, aenc, how='outer')
 
-    return customers
+    return customers, ['customer_id']
 
 def customers_adventureworks():
     cursor = setup_cursor(os.getenv("adventureworks"))
