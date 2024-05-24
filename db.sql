@@ -12,10 +12,9 @@ CREATE TABLE product_review (
     review_date DATETIME NOT NULL, 
 
     /* Product t */
-    product_id varchar(255) NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -31,10 +30,10 @@ CREATE TABLE product_review (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -43,8 +42,6 @@ CREATE TABLE product_review (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP NOT NULL
@@ -77,10 +74,9 @@ CREATE TABLE bill_of_materials (
     
 
     /* Product */
-    product_id varchar(255) NOT NULL,
+    product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -96,10 +92,10 @@ CREATE TABLE bill_of_materials (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -108,8 +104,6 @@ CREATE TABLE bill_of_materials (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP NOT NULL
@@ -144,7 +138,6 @@ CREATE TABLE special_offer (
     product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -160,10 +153,10 @@ CREATE TABLE special_offer (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -172,8 +165,6 @@ CREATE TABLE special_offer (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP NOT NULL
@@ -526,7 +517,6 @@ CREATE TABLE sales_order (
     product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -542,10 +532,10 @@ CREATE TABLE sales_order (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -554,8 +544,6 @@ CREATE TABLE sales_order (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
  
@@ -589,7 +577,6 @@ CREATE TABLE transaction_history (
     product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -605,10 +592,10 @@ CREATE TABLE transaction_history (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -617,8 +604,6 @@ CREATE TABLE transaction_history (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP,
@@ -712,7 +697,6 @@ CREATE TABLE product_cost_history (
     product_id VARCHAR(255) NOT NULL,
     product_name varchar(max) NOT NULL,
     product_number varchar(255),
-    product_description varchar(max),
     product_make_flag INT,
     product_finished_goods_flag INT,
     product_safety_stock_level INT,
@@ -728,10 +712,10 @@ CREATE TABLE product_cost_history (
     product_category varchar(255),
     product_subcategory varchar(255),
     product_model varchar(255),
-    product_sell_start_date DATETIME,
-    product_sell_end_date DATETIME,
-    product_discontinued_date DATETIME,
-    product_discontinued bit NOT NULL,
+    product_sell_start_date datetime,
+    product_sell_end_date datetime,
+    product_discontinued_date datetime,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -740,8 +724,6 @@ CREATE TABLE product_cost_history (
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP,
@@ -1007,7 +989,7 @@ CREATE TABLE work_order_routing(
     product_sell_start_date datetime,
     product_sell_end_date datetime,
     product_discontinued_date datetime,
-    product_discontinued bit NOT NULL,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -1016,8 +998,6 @@ CREATE TABLE work_order_routing(
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     /*scrap_reason*/
@@ -1093,7 +1073,7 @@ CREATE TABLE purchase_order(
     product_sell_start_date datetime,
     product_sell_end_date datetime,
     product_discontinued_date datetime,
-    product_discontinued bit NOT NULL,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -1102,8 +1082,6 @@ CREATE TABLE purchase_order(
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     /* Employee */
@@ -1211,7 +1189,7 @@ CREATE TABLE price_history_shopping_cart(
     product_sell_start_date datetime,
     product_sell_end_date datetime,
     product_discontinued_date datetime,
-    product_discontinued bit NOT NULL,
+    product_discontinued bit,
     product_size_unit_measure_code varchar(255),
     product_weight_unit_measure_code varchar(255),
     product_vendor_country varchar(255),
@@ -1220,13 +1198,12 @@ CREATE TABLE price_history_shopping_cart(
     product_vendor_address varchar(255),
     product_vendor_name varchar(255),
     product_color varchar(255),
-    product_shelf INT,
-    product_bin INT,
     product_quantity INT,
 
     change_date TIMESTAMP,
 )
 
+/* For testing write to db
 CREATE TABLE order_temp(
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
@@ -1265,3 +1242,4 @@ CREATE TABLE order_temp(
 
     change_date TIMESTAMP,
 )
+*/
