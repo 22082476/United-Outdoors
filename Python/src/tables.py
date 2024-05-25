@@ -43,6 +43,7 @@ def aw_sales_territory():
     return aw_sales_territory
 
 def aw_paymethod_table():
-    aw_paymethod_columns = ['paymethod_id', 'creditcard'].rename(columns={'PayMethodID':'paymethod', 'CreditCard':'creditcard'})
+    aw_paymethod_columns = ['paymethod_id', 'creditcard']
     aw_paymethod = pd.DataFrame(columns=aw_paymethod_columns)
+    aw_paymethod = aw_paymethod.rename(columns={'paymethod_id':'paymethod', 'creditcard':'CreditCard'})
     return aw_paymethod
