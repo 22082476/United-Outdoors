@@ -1,5 +1,5 @@
 import pandas as pd
-from handle import setup_cursor, get_data
+from handle import setup_cursor, get_data, insert_data
 from dotenv import load_dotenv
 load_dotenv('.env')
 import os
@@ -47,3 +47,21 @@ def aw_paymethod_table():
     aw_paymethod = pd.DataFrame(columns=aw_paymethod_columns)
     aw_paymethod = aw_paymethod.rename(columns={'paymethod_id':'paymethod', 'creditcard':'CreditCard'})
     return aw_paymethod
+
+def main():
+    sales_currency = aw_sales_currency()
+    shipmethod = aw_shipmethod()
+    salesorderreason = aw_salesorderreason()
+    sales_territory = aw_sales_territory()
+    paymethod_table = aw_paymethod_table()
+
+    cursor_dw = setup_cursor(os.getenv("datawarehouse"))
+
+    insert_data(cursor_dw, 'DataWarehouse.SalesCurrency', ['currency_code'], sales_currency)
+    insert_data(cursor_dw, 'DataWarehouse.ShipMethod', ['shipmethod_id'], shipmethod)
+    insert_data(cursor_dw, 'DataWarehouse.SalesOrderReason', ['salesorder_id', 'salesreason_id'], salesorderreason)
+    insert_data(cursor_dw, 'DataWarehouse.SalesTerritory', ['sales_territory_id'], sales_territory)
+    insert_data(cursor_dw, 'DataWarehouse.PayMethod', ['paymethod'], paymethod_table)
+
+if __name__ == "__main__":
+    main()
