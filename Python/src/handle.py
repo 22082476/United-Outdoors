@@ -4,6 +4,7 @@ import decimal
 import math
 import pandas as pd
 import re
+from classes import DateTable
 
 def setup_cursor(connection):
     connection = pyodbc.connect(connection)
@@ -108,6 +109,23 @@ def house_number(address):
     except Exception as e:
         print(f"Error: {e}")
         return None
+    
+def date (date):
+    date_list = date.split(' ')
+    date = date_list[0].split('-')
+    time = date_list[1].split(':')
+
+    return DateTable(date[0], quarter(date[1]), date[1], date[2], time[0], time[1], date)
+
+def quarter (month):
+    if month <= 3:
+        return 1
+    elif month <= 6:
+        return 2
+    elif month <= 9:
+        return 3
+    else:
+        return 4
 
 def handleOne (cursor, source, method):   
     for index, row in source.iterrows():

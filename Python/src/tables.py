@@ -3,13 +3,7 @@ from handle import setup_cursor, get_data
 from dotenv import load_dotenv
 load_dotenv('.env')
 import os
-
-
-
-class SalesCurrency:
-    def __init__(self, currency_code, currency_name):
-        self.currency_code = currency_code
-        self.currency_name = currency_name
+from classes import Employee, Employees, DateTable, AdressTable, SalesCurrency, ShipMethod, Shippers, SalesOrderReason, SalesTerritory, PayMethod
 
 def aw_sales_currency():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
@@ -21,17 +15,6 @@ def aw_sales_currency():
     
     print(sales_currencies)
     return sales_currencies
-
-
-
-
-
-class ShipMethod:
-    def __init__(self, shipmethod_id, shipmethod_name, shipmethod_ship_base, shipmethod_ship_rate):
-        self.shipmethod_id = shipmethod_id
-        self.shipmethod_name = shipmethod_name
-        self.shipmethod_ship_base = shipmethod_ship_base
-        self.shipmethod_ship_rate = shipmethod_ship_rate
 
 def aw_shipmethod():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
@@ -47,13 +30,6 @@ def aw_shipmethod():
     return ship_methods
 
 
-
-class Shippers:
-    def __init__(self, shipper_id, company_name, Phone):
-        self.shipper_id = shipper_id
-        self.company_name = company_name
-        self.Phone = Phone
-
 def nw_shippers():
     cursor_nw = setup_cursor(os.getenv('northwind'))
     nw_shipper = get_data(cursor_nw, "dbo.Shippers")
@@ -65,16 +41,6 @@ def nw_shippers():
     print(len(shippers))
     return shippers
 
-
-
-
-
-class SalesOrderReason:
-    def __init__(self, salesorder_id, salesreason_id, salesreason_name, salesreason_type):
-        self.salesorder_id = salesorder_id
-        self.salesreason_id = salesreason_id
-        self.salesreason_name = salesreason_name
-        self.salesreason_type = salesreason_type
 
 def aw_salesorderreason():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
@@ -92,17 +58,6 @@ def aw_salesorderreason():
     return sales_order_reasons
 
 
-
-
-class SalesTerritory:
-    def __init__(self, sales_territory_id, sales_territory_name, sales_territory_YTD, sales_territory_sales_last_year, sales_territory_cost_YTD, sales_territory_cost_last_year):
-        self.sales_territory_id = sales_territory_id
-        self.sales_territory_name = sales_territory_name
-        self.sales_territory_YTD = sales_territory_YTD
-        self.sales_territory_sales_last_year = sales_territory_sales_last_year
-        self.sales_territory_cost_YTD = sales_territory_cost_YTD
-        self.sales_territory_cost_last_year = sales_territory_cost_last_year
-
 def aw_sales_territory():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
     aw_sales_territory = get_data(cursor_aw, "Sales.SalesTerritory")
@@ -115,14 +70,6 @@ def aw_sales_territory():
     return sales_territories
 
 
-
-
-
-class PayMethod:
-    def __init__(self, paymethod_id, creditcard):
-        self.paymethod_id = paymethod_id
-        self.creditcard = creditcard
-
 def aw_paymethod_table():
     aw_paymethod_columns = ['paymethod_id', 'creditcard']
     aw_paymethod = pd.DataFrame(columns=aw_paymethod_columns)
@@ -133,18 +80,6 @@ def aw_paymethod_table():
         pay_methods.append(PayMethod(row["paymethod"], row["CreditCard"]))
     print(len(pay_methods))
     return pay_methods
-
-
-class DateTable:
-    def __init__(self, year, quarter, month, day, hour, minute, date):
-        self.year = year
-        self.quarter = quarter
-        self.month = month
-        self.day = day
-        self.hour = hour
-        self.minute = minute
-        self.date = date
-
 
 def aw_date_table():
     aw_date_columns = ['year', 'quarter', 'month', 'day', 'hour', 'minute', 'Date']
@@ -157,19 +92,11 @@ def aw_date_table():
     print(len(date_tables))
     return date_tables
 
-class AdressTable:
-    def __init__(self, country, region, province, postalcode, street, adress):
-        self.country = country
-        self.region = region
-        self.province = province
-        self.postalcode = postalcode
-        self.street = street
-        self.adress = adress
+
 
 def aw_adress_table():
     aw_adress_columns = ['country', 'region', 'province', 'postalcode', 'street', 'adress']
     aw_adress = pd.DataFrame(columns=aw_adress_columns)
-    aw_adress = aw_adress.rename(columns={'country':'CountryRegionCode', 'region':'Region', 'province':'StateProvinceCode', 'postalcode':'PostalCode', 'street':'AddressLine1', 'adress':'AddressLine2'})
 
     adress_tables = []
     for index, row in aw_adress.iterrows():
