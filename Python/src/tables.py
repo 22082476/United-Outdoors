@@ -119,3 +119,46 @@ def aw_paymethod_table():
         pay_methods.append(PayMethod(row["paymethod"], row["CreditCard"]))
     print(len(pay_methods))
     return pay_methods
+
+
+class DateTable:
+    def __init__(self, year, quarter, month, day, hour, minute, date):
+        self.year = year
+        self.quarter = quarter
+        self.month = month
+        self.day = day
+        self.hour = hour
+        self.minute = minute
+        self.date = date
+
+
+def aw_date_table():
+    aw_date_columns = ['year', 'quarter', 'month', 'day', 'hour', 'minute', 'Date']
+    aw_date = pd.DataFrame(columns=aw_date_columns)
+    aw_date = aw_date.rename(columns={'year':'year', 'quarter':'quarter', 'month':'month', 'day':'day', 'hour':'hour', 'minute':'minute', 'Date':'Date'})
+
+    date_tables = []
+    for index, row in aw_date.iterrows():
+        date_tables.append(DateTable(row["year"], row["quarter"], row["month"], row["day"], row["hour"], row["minute"], row["Date"]))
+    print(len(date_tables))
+    return date_tables
+
+class AdressTable:
+    def __init__(self, country, region, province, postalcode, street, adress):
+        self.country = country
+        self.region = region
+        self.province = province
+        self.postalcode = postalcode
+        self.street = street
+        self.adress = adress
+
+def aw_adress_table():
+    aw_adress_columns = ['country', 'region', 'province', 'postalcode', 'street', 'adress']
+    aw_adress = pd.DataFrame(columns=aw_adress_columns)
+    aw_adress = aw_adress.rename(columns={'country':'CountryRegionCode', 'region':'Region', 'province':'StateProvinceCode', 'postalcode':'PostalCode', 'street':'AddressLine1', 'adress':'AddressLine2'})
+
+    adress_tables = []
+    for index, row in aw_adress.iterrows():
+        adress_tables.append(AdressTable(row["CountryRegionCode"], row["Region"], row["StateProvinceCode"], row["PostalCode"], row["AddressLine1"], row["AddressLine2"]))
+    print(len(adress_tables))
+    return adress_tables
