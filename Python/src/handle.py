@@ -4,7 +4,7 @@ import decimal
 import math
 import pandas as pd
 import re
-from classes import DateTable
+from classes import DateTable, DateHandler
 
 def setup_cursor(connection):
     connection = pyodbc.connect(connection)
@@ -115,7 +115,9 @@ def date (date):
     date = date_list[0].split('-')
     time = date_list[1].split(':')
 
-    return DateTable(date[0], quarter(date[1]), date[1], date[2], time[0], time[1], date)
+    return DateTable(date[0], quarter(DateHandler().get_month_number(date[1])), DateHandler().get_month_number(date[1]), date[2], time[0], time[1], date)
+
+
 
 def quarter (month):
     if month <= 3:

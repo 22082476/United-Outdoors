@@ -66,14 +66,14 @@ class Employee:
         self.employee_bonus = employee_bonus
         self.employee_commission_pct = employee_commission_pct
 
-class AdressTable:
-    def __init__(self, country, region, province, postalcode, street, adress):
+class AddressTable:
+    def __init__(self, country, region, city, postalcode, street, address):
         self.country = country
         self.region = region
-        self.province = province
+        self.city = city
         self.postalcode = postalcode
         self.street = street
-        self.adress = adress
+        self.address = address
 
 class PayMethod:
     def __init__(self, paymethod_id, creditcard):
@@ -114,3 +114,29 @@ class SalesCurrency:
     def __init__(self, currency_code, currency_name):
         self.currency_code = currency_code
         self.currency_name = currency_name
+
+class DateHandler:
+    def __init__(self):
+        self.month_mapping = {
+            "january": 1, "jan": 1, "1": 1,
+            "february": 2, "feb": 2, "2": 2,
+            "march": 3, "mar": 3, "3": 3,
+            "april": 4, "apr": 4, "4": 4,
+            "may": 5, "may": 5, "5": 5,
+            "june": 6, "jun": 6, "6": 6,
+            "july": 7, "jul": 7, "7": 7,
+            "august": 8, "aug": 8, "8": 8,
+            "september": 9, "sep": 9, "9": 9,
+            "october": 10, "oct": 10, "10": 10,
+            "november": 11, "nov": 11, "11": 11,
+            "december": 12, "dec": 12, "12": 12
+        }
+
+    def get_month_number(self, input_month):
+        # Convert input to string and lowercase to handle case insensitivity
+        input_month_str = str(input_month).strip().lower()
+        # Remove leading zeros from numerical strings (e.g., "01" -> "1")
+        if input_month_str.isdigit():
+            input_month_str = str(int(input_month_str))
+        # Look up the month number in the mapping dictionary
+        return self.month_mapping.get(input_month_str, None)

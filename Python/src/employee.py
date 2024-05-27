@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import os
 from handle import get_data, setup_cursor, house_number
-from employee import Employee, Employees
+from classes import Employee, Employees
 load_dotenv('.env')
 
 
