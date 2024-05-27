@@ -1,10 +1,11 @@
 import pandas as pd
-from handle import setup_cursor, get_data
+from handle import setup_cursor, get_data, insert_data
 from dotenv import load_dotenv
 load_dotenv('.env')
 import os
 
 def customers():
+    # cursor = setup_cursor(os.getenv("datawarehouse"))
     aw = customers_adventureworks()
     nw = customers_northwind()
     aenc = customers_aenc()
@@ -12,6 +13,8 @@ def customers():
     merge1 =  pd.merge(aw, nw, how='outer')
     customers = pd.merge(merge1, aenc, how='outer')
 
+    # insert_data(cursor, "customer_temp", ["customer_id"], customers) #for testing writing to db
+    # Return the table and the primary key(s)
     return customers, ['customer_id']
 
 def customers_adventureworks():

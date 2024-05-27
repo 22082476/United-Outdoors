@@ -47,6 +47,7 @@ RENAME_DICT = {
 }
 
 def products():
+    #cursor = setup_cursor(os.getenv("datawarehouse"))
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()

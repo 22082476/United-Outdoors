@@ -35,8 +35,6 @@ def insert_data(cursor, destination_table: str, p_keys: list, data):
 
             if existing_row is None or check_changes(existing_row, new_values, column_types):
                 cursor.execute(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", tuple(new_values))
-                print(f"Oud: {existing_row}")
-                print(f"Nieuw: {new_values}")
         except Exception as e:
             print(e)
 
