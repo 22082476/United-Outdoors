@@ -1,5 +1,6 @@
 import pyodbc
 import pandas as pd
+import re
 
 def setup_cursor(connection):
     connection = pyodbc.connect(connection)
@@ -57,3 +58,17 @@ def get_data(cursor, name):
     rows_as_tuples = [tuple(row) for row in rows]
     data = pd.DataFrame(rows_as_tuples, columns=column_names)
     return data
+
+
+def house_number(address):
+    try:
+        pattern = r'\b(\d+)\b'
+        matches = re.findall(pattern, address)
+        
+        if matches:
+            return matches[0]
+        else:
+            return None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None

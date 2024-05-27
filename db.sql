@@ -195,9 +195,6 @@ CREATE TABLE bonus (
     /* Employee */
     employee_id VARCHAR(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -252,10 +249,7 @@ CREATE TABLE employee_pay_history (
 
      /* Employee */
     employee_id VARCHAR(255) NOT NULL,
-    employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
+    employee_full_name varchar(255) NOT NULL,    
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -328,9 +322,6 @@ CREATE TABLE employee_deparment_history (
      /* Employee */
     employee_id VARCHAR(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -481,9 +472,6 @@ CREATE TABLE sales_order (
     /* Employee */
     employee_id varchar(255),
     employee_full_name varchar(255),
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -639,10 +627,7 @@ CREATE TABLE business_entity_contact (
 
     /* Employee */
     employee_id varchar(255) NOT NULL,
-    employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
+    employee_full_name varchar(255) NOT NULL,    
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -767,10 +752,7 @@ CREATE TABLE sales_territory_history(
 
     /* Employee */
     employee_id varchar(255) NOT NULL,
-    employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
+    employee_full_name varchar(255) NOT NULL,,
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -844,9 +826,6 @@ CREATE TABLE sales_person_quota_history(
     /* Employee */
     employee_id varchar(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -1102,9 +1081,6 @@ CREATE TABLE purchase_order(
     /* Employee */
     employee_id varchar(255) NOT NULL,
     employee_full_name varchar(255) NOT NULL,
-    employee_ss_number varchar(255),
-    employee_phone_number varchar(255),
-    employee_home_phone_number varchar(255),
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,

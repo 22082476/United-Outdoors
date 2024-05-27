@@ -1,17 +1,13 @@
 from dotenv import load_dotenv
 import pandas as pd
 import os
-import numpy as np
-from handle import get_data, setup_cursor
+from handle import get_data, setup_cursor, house_number
 load_dotenv('.env')
 
 class Employee:
-    def __init__(self, employee_id, employee_full_name, employee_ss_number, employee_phone_number, employee_home_phone_number, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_sales_quota, employee_bonus, employee_commission_pct):
+    def __init__(self, employee_id, employee_full_name, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_sales_quota, employee_bonus, employee_commission_pct):
         self.employee_id = employee_id
         self.employee_full_name = employee_full_name
-        self.employee_ss_number = employee_ss_number
-        self.employee_phone_number = employee_phone_number
-        self.employee_home_phone_number = employee_home_phone_number
         self.employee_extention = employee_extention
         self.employee_sales_YTD = employee_sales_YTD
         self.employee_sales_last_year = employee_sales_last_year
@@ -60,17 +56,19 @@ def adventure_employee ():
     adventure_salesperson = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.SalesPerson")
     adventure_employee = get_data(setup_cursor(os.getenv('adventureworks')), "HumanResources.Employee")
     adventure_payhistory = get_data(setup_cursor(os.getenv('adventureworks')), "HumanResources.EmployeePayHistory")
+    adventure_payhistory.drop_duplicates(subset=["BusinessEntityID"], keep='last', inplace=True)
     adventure_department = get_data(setup_cursor(os.getenv('adventureworks')), "HumanResources.Department")
     adventure_department_history = get_data(setup_cursor(os.getenv('adventureworks')), "HumanResources.EmployeeDepartmentHistory")
+    adventure_department_history.drop_duplicates(subset=["BusinessEntityID"], keep='last', inplace=True)
     adventure_countryregion = get_data(setup_cursor(os.getenv('adventureworks')), "Person.CountryRegion")
     adventure_business_address = get_data(setup_cursor(os.getenv('adventureworks')), "Person.BusinessEntityAddress")
     adventure_address = get_data(setup_cursor(os.getenv('adventureworks')), "Person.Address")
     adventure_stateprovince = get_data(setup_cursor(os.getenv('adventureworks')), "Person.StateProvince")
     adventure_salesterritory = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.SalesTerritory")
     adventure_salesterritory_history = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.SalesTerritoryHistory")
+    adventure_salesterritory_history.drop_duplicates(subset=["BusinessEntityID"], keep='last', inplace=True)
     adventure_salesstore = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.Store")
     adventure_person = get_data(setup_cursor(os.getenv('adventureworks')), "Person.Person")
-    adventure_person_phone = get_data(setup_cursor(os.getenv('adventureworks')), "Person.PersonPhone")
 
     adventure_salesperson = adventure_salesperson.drop(["rowguid", "ModifiedDate"], axis=1)
     adventure_employee = adventure_employee.drop(["rowguid", "ModifiedDate"], axis=1)
@@ -83,45 +81,39 @@ def adventure_employee ():
     adventure_salesterritory = adventure_salesterritory.drop(["rowguid", "ModifiedDate"], axis=1)
     adventure_salesstore = adventure_salesstore.drop(["rowguid", "ModifiedDate"], axis=1)
     adventure_person = adventure_person.drop(["rowguid", "ModifiedDate"], axis=1)
-    adventure_person_phone = adventure_person_phone.drop(["ModifiedDate"], axis=1)
 
     adventure = pd.merge(adventure_person, adventure_employee, on='BusinessEntityID', how='inner')
-    adventure = pd.merge(adventure, adventure_salesperson, on='BusinessEntityID', how='outer')
+    adventure = pd.merge(adventure, adventure_salesperson, on='BusinessEntityID', how='left')
+    adventure.rename(columns={"SalesYTD":"emp_sales_ytd", "SalesLastYear": "emp_sales_last_year"}, inplace=True)
     adventure = pd.merge(adventure, adventure_payhistory, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_department_history, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_department, on='DepartmentID', how='inner')
     adventure = pd.merge(adventure, adventure_business_address, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_address, on='AddressID', how='inner')
+    adventure.rename(columns={"Name":"departnement"}, inplace=True)
     adventure = pd.merge(adventure, adventure_stateprovince, on='StateProvinceID', how='inner')
+    adventure.rename(columns={"Name":"state"}, inplace=True)
     adventure = pd.merge(adventure, adventure_countryregion, on='CountryRegionCode', how='inner')
     adventure.rename(columns={"Name": "country"}, inplace=True)
-    adventure = pd.merge(adventure, adventure_salesterritory_history, on='BusinessEntityID', how='outer')
-    adventure = pd.merge(adventure, adventure_salesterritory, on='TerritoryID', how='outer')
+    adventure.drop(["CountryRegionCode"], axis=1, inplace=True)
+    adventure = pd.merge(adventure, adventure_salesterritory_history, on='BusinessEntityID', how='left')
+    adventure = pd.merge(adventure, adventure_salesterritory, on='TerritoryID', how='left')
     adventure.rename(columns={"Name": "territory"}, inplace=True)
     #adventure = pd.merge(adventure, adventure_salesstore, left_on='BusinessEntityID', right_on='SalesPersonID', how='inner') Demographics mss veranderen
-    #adventure = pd.merge(adventure, adventure_person_phone, on='BusinessEntityID', how='inner')
     
-    adventure["full_name"] = adventure["FirstName"]+ " " + adventure["MiddleName"] + " " + adventure["LastName"]
+    adventure["full_name"] = adventure["Suffix"] + " " + adventure["FirstName"]+ " " + adventure["MiddleName"] + " " + adventure["LastName"]
     adventure["manager"] = None
     adventure["salary"] = adventure["Rate"] * 36
     adventure["emp_id"] = "AW_" + adventure["BusinessEntityID"].astype(str)
-    adventure.drop(['FirstName', "CurrentFlag", "Rate", "PayFrequency", "IsOnlyStateProvinceFlag", "rowguid", "ModifiedDate_y", "ModifiedDate_x", "MiddleName", 'LastName', "Suffix", "NationalIDNumber", "PersonType", "OrganizationNode", "LoginID", "EmailPromotion", "NameStyle", "Title", "BusinessEntityID"], axis=1, inplace=True)
+    adventure.drop(['FirstName', "CurrentFlag", "Rate", "PayFrequency", "IsOnlyStateProvinceFlag", "rowguid", "ModifiedDate_y", "ModifiedDate_x", "MiddleName", 'LastName', "Suffix", "NationalIDNumber", "PersonType", "OrganizationNode", "LoginID", "EmailPromotion", "NameStyle", "BusinessEntityID"], axis=1, inplace=True)
     adventure.rename(columns={"Gender":"sex"})
-
-    print(adventure.columns)   
-    print(len(adventure))
     
     employees = []
 
     for index, row in adventure.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, phone, None, None, row["SalesYTD"], row["SalesLast"], None, row["departnement"], row["HireDate"], None, row["salary"], row["country"], region, row["City"], row["PostalCode"], row["AddressLine1"], housenumber, manager, None, None, None, row["Gender"], end_date, row["JobTitle"], suffix, None, row["territory"], ter_country, row["SalariedFlag"], row["VacationHours"], row["SickLeaveHours"], row["MaritalStatus"], row["OrganizationLevel"], row["SalesQuota"], row["Bonus"], row["CommissionPct"]))
+        employees.append(Employee(row["emp_id"], row["full_name"], None, row["emp_sales_ytd"], row["emp_sales_last_year"], None, row["departnement"], row["HireDate"], row["BirthDate"], row["salary"], row["country"], None, row["City"], row["PostalCode"], row["AddressLine1"], house_number(row["AddressLine1"]), row["manager"], None, None, None, row["Gender"], None, row["JobTitle"], row["Title"], row["Group"], row["territory"], row["CountryRegionCode"], row["VacationHours"], row["SickLeaveHours"], row["MaritalStatus"], row["OrganizationLevel"], row["SalesQuota"], row["Bonus"], row["CommissionPct"]))
 
-    print(len(employees))
-
-    #print(adventure.columns)
-
-
-
+    return employees
 
 def aenc_employee ():
     aenc_employee = get_data(setup_cursor(os.getenv('aenc')), "employee")
@@ -145,7 +137,7 @@ def aenc_employee ():
     employees = []
 
     for index, row in aenc.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], row["ss_number"], row["phone"], None, None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], None, row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
+        employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
     
     #print(len(employees))
 
@@ -177,8 +169,11 @@ def northwind_employee ():
     employees = []
 
     for index, row in northwind.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, None, row["home_phone"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], row["house_number"], row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None))
+        employees.append(Employee(row["emp_id"], row["full_name"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], house_number(row["address"]), row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None))
 
     #print(len(employees))
 
     return employees
+
+
+
