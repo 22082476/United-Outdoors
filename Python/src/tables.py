@@ -95,11 +95,11 @@ def aw_date_table():
 
 
 def aw_adress_table():
-    aw_adress_columns = ['country', 'region', 'province', 'postalcode', 'street', 'adress']
+    aw_adress_columns = ['country', 'region', 'city', 'postalcode', 'street', 'adress']
     aw_adress = pd.DataFrame(columns=aw_adress_columns)
 
     adress_tables = []
     for index, row in aw_adress.iterrows():
-        adress_tables.append(AdressTable(row["CountryRegionCode"], row["Region"], row["StateProvinceCode"], row["PostalCode"], row["AddressLine1"], row["AddressLine2"]))
+        adress_tables.append(AdressTable(row["country"], row["region"], row["city"], row["postalcode"], row["street"], row["adress"]))
     print(len(adress_tables))
     return adress_tables
