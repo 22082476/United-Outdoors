@@ -6,7 +6,7 @@ from handle import get_data, setup_cursor
 load_dotenv('.env')
 
 class Employee:
-    def __init__(self, employee_id, employee_full_name, employee_ss_number, employee_phone_number, employee_home_phone_number, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_salaried_flag, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_demographics, employee_sales_quota, employee_bonus, employee_commission_pct):
+    def __init__(self, employee_id, employee_full_name, employee_ss_number, employee_phone_number, employee_home_phone_number, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_sales_quota, employee_bonus, employee_commission_pct):
         self.employee_id = employee_id
         self.employee_full_name = employee_full_name
         self.employee_ss_number = employee_ss_number
@@ -37,12 +37,11 @@ class Employee:
         self.employee_group = employee_group
         self.employee_territory = employee_territory
         self.employee_country_region_code = employee_country_region_code
-        self.employee_salaried_flag = employee_salaried_flag #is dit niet overbodig? zegt niks namelijk
         self.employee_vactions_hours = employee_vactions_hours
         self.employee_sick_leave_hours = employee_sick_leave_hours
         self.employee_martial_status = employee_martial_status
         self.employee_orginanizion_level = employee_orginanizion_level
-        self.employee_demographics = employee_demographics #waar moet het vandaan komen?
+        #self.employee_demographics = employee_demographics #waar moet het vandaan komen?
         self.employee_sales_quota = employee_sales_quota
         self.employee_bonus = employee_bonus
         self.employee_commission_pct = employee_commission_pct
@@ -86,8 +85,6 @@ def adventure_employee ():
     adventure_person = adventure_person.drop(["rowguid", "ModifiedDate"], axis=1)
     adventure_person_phone = adventure_person_phone.drop(["ModifiedDate"], axis=1)
 
-    
-
     adventure = pd.merge(adventure_person, adventure_employee, on='BusinessEntityID', how='inner')
     adventure = pd.merge(adventure, adventure_salesperson, on='BusinessEntityID', how='outer')
     adventure = pd.merge(adventure, adventure_payhistory, on='BusinessEntityID', how='inner')
@@ -117,7 +114,7 @@ def adventure_employee ():
     employees = []
 
     for index, row in adventure.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, phone, None, None, row["SalesYTD"], row["SalesLast"], None, row["departnement"], row["HireDate"], None, row["salary"], row["country"], region, row["City"], row["PostalCode"], row["AddressLine1"], housenumber, manager, None, None, None, row["Gender"], end_date, row["JobTitle"], suffix, None, row["territory"], ter_country, row["SalariedFlag"], row["VacationHours"], row["SickLeaveHours"], row["MaritalStatus"], row["OrganizationLevel"], demogrpahics, row["SalesQuota"], row["Bonus"], row["CommissionPct"]))
+        employees.append(Employee(row["emp_id"], row["full_name"], None, phone, None, None, row["SalesYTD"], row["SalesLast"], None, row["departnement"], row["HireDate"], None, row["salary"], row["country"], region, row["City"], row["PostalCode"], row["AddressLine1"], housenumber, manager, None, None, None, row["Gender"], end_date, row["JobTitle"], suffix, None, row["territory"], ter_country, row["SalariedFlag"], row["VacationHours"], row["SickLeaveHours"], row["MaritalStatus"], row["OrganizationLevel"], row["SalesQuota"], row["Bonus"], row["CommissionPct"]))
 
     print(len(employees))
 
@@ -148,7 +145,7 @@ def aenc_employee ():
     employees = []
 
     for index, row in aenc.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], row["ss_number"], row["phone"], None, None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], None, row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None, None, None))
+        employees.append(Employee(row["emp_id"], row["full_name"], row["ss_number"], row["phone"], None, None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], None, row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
     
     #print(len(employees))
 
@@ -180,7 +177,7 @@ def northwind_employee ():
     employees = []
 
     for index, row in northwind.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, None, row["home_phone"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], row["house_number"], row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None, None, None))
+        employees.append(Employee(row["emp_id"], row["full_name"], None, None, row["home_phone"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], row["house_number"], row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None))
 
     #print(len(employees))
 
