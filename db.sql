@@ -346,7 +346,6 @@ CREATE TABLE employee_deparment_history (
 
     change_date TIMESTAMP,
 );
-
 CREATE TABLE sales_order (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
@@ -387,6 +386,13 @@ CREATE TABLE sales_order (
     ship_date_minute varchar(2),
     ship_date DATETIME NOT NULL,
 
+    /* Date */
+    currency_rate_date_year varchar(4),
+    currency_rate_date_quarter varchar(1),
+    currency_rate_date_month varchar(2),
+    currency_rate_date_day varchar(2),
+    currency_rate_date_hour varchar(2),
+    currency_rate_date_minute varchar(2),
     currency_rate_date DATETIME,
 
     /* Customer */
@@ -417,7 +423,7 @@ CREATE TABLE sales_order (
     ship_to_address_region varchar(255),
     ship_to_address_city varchar(255),
     ship_to_address_postalcode varchar(255),
-    ship_to_address_street varchar(255),
+    /* ship_to_address_street varchar(255), */
     ship_to_address varchar(255) NOT NULL,
 
     /* Address */
@@ -425,7 +431,7 @@ CREATE TABLE sales_order (
     bill_to_address_region varchar(255),
     bill_to_address_city varchar(255),
     bill_to_address_postalcode varchar(255),
-    bill_to_address_street varchar(255),
+    /* bill_to_address_street varchar(255), */
     bill_to_address varchar(255) NOT NULL,
 
     /* Shipmethod */
@@ -438,14 +444,14 @@ CREATE TABLE sales_order (
     paymethod varchar(255) NOT NULL,
 
     /* Currency */
-    from_currency_code INT,
+    from_currency_code varchar(255),
     from_currency_name varchar(255),
 
     /* Currency */
-    to_currency_code INT,
+    to_currency_code varchar(255),
     to_currency_name varchar(255),
 
-    /* Region */
+    /* Region Welke region? */
     region_country varchar(255),
     region_state varchar(255),
     region varchar(255),
