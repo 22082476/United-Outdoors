@@ -15,8 +15,7 @@ def sales_order ():
 
     #nw_orders = get_data(setup_cursor(os.getenv("northwind")), "Orders")
     #nw_order_details = get_data(setup_cursor(os.getenv("northwind")), "OrderDetails")
-
-    
+      
 
 def aenc ():
     aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
@@ -32,6 +31,7 @@ def aenc ():
     aenc_sales.drop(["cust_id", "prod_id"], axis=1, inplace=True)
     print(aenc_sales.columns)
     print(len(aenc_sales))
+    aenc_sales = aenc_sales.head(4)
 
     for index, row in aenc_sales.iterrows():
         
@@ -59,12 +59,14 @@ def aenc ():
 
         row["company_name"] = None
 
-        row["unit_price"] = row["product_list_price"]
+        row["unit_price"] = float(row["product_list_price"])
         row["revenue"] = float(row["unit_price"]) * int(row["quantity"])
         row["tax_amt"] = None
         row["freight"] = None  
         row["sub_total"] = row["revenue"]
         row["total_due"] = row["revenue"]
+
+        print(row["unit_price"])
 
         
     insert_data(setup_cursor(os.getenv("datawharehouse")), "sales_order", ["id", "line_id"], aenc_sales)

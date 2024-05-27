@@ -35,9 +35,19 @@ def insert_data(cursor, destination_table: str, p_keys: list, data):
             new_values = [validate_data_type(r[col], col_type) for col, col_type in zip(column_names, column_types)]
 
             if existing_row is None or check_changes(existing_row, new_values, column_types):
+                print(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", tuple(new_values))
                 cursor.execute(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", tuple(new_values))
+        #except Exception as e:
+            #print(e)
+        except pyodbc.IntegrityError as e:
+            print(f"IntegrityError occurred: {e}")
+        except pyodbc.OperationalError as e:
+            print(f"OperationalError occurred: {e}")
+        except pyodbc.DatabaseError as e:
+            print(f"DatabaseError occurred: {e}")
         except Exception as e:
-            print(e)
+            print(f"An unexpected error occurred: {e}")
+            raise
 
     cursor.commit()
 
