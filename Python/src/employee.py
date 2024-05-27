@@ -180,5 +180,3 @@ def northwind_employee ():
 
 def employee ():
     return Employees(adventure_employee(), aenc_employee(), northwind_employee())
-
-
