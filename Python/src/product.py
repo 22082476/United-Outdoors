@@ -1,5 +1,5 @@
 import pandas as pd
-from handle import setup_cursor, get_data
+from handle import setup_cursor, get_data, insert_data
 from dotenv import load_dotenv
 load_dotenv('.env')
 import os
@@ -47,8 +47,6 @@ RENAME_DICT = {
 }
 
 def products():
-    export_cursor = setup_cursor(os.getenv('datawharehouse'))
-
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()
@@ -61,8 +59,11 @@ def products():
     products = pd.merge(merge_1, aenc, how='outer')
     products.rename(columns=RENAME_DICT, inplace=True)
     products = products.drop(['rowguid','state_province_id','address_id','business_entity_id','product_subcategory_id','change_date','product_vendor_state_province_name','product_model_id'], axis=1)
-    print(products)
-    # Add export/write stuff
+
+    # insert_data(export_cursor, "order_temp", ["product_id"], products) #for testing writing to db
+    # Return the table and the primary key(s)
+    return products, ['product_id']
+    
 
 def products_adventureworks():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
@@ -86,13 +87,12 @@ def products_adventureworks():
     categories = categories.rename(columns={'Name_x': 'ProductSubCategory', 'Name_y': 'ProductCategory'})
     categories = categories.loc[:, ['ProductSubcategoryID', 'ProductSubCategory', 'ProductCategory']]
     
-    # Som van alle hoeveelheden gepakt per ProductID, kan ook anders
+    # Som van alle hoeveelheden gepakt per ProductID
     inventory = inventory.groupby('ProductID')['Quantity'].sum().reset_index()
     
-    # Models
-    merge = model.loc[:, ['ProductModelID', 'Name']].rename(columns={'Name': 'ModelName'})
+    model = model.loc[:, ['ProductModelID', 'Name']].rename(columns={'Name': 'ModelName'})
 
-    product1 = pd.merge(product, merge, left_on='ProductModelID', right_on='ProductModelID', how='left')
+    product1 = pd.merge(product, model, left_on='ProductModelID', right_on='ProductModelID', how='left')
     product2 = pd.merge(product1, inventory, left_on='ProductID', right_on='ProductID', how='left')
     product3 = pd.merge(product2, categories, left_on='ProductSubcategoryID', right_on='ProductSubcategoryID', how='left')
    
