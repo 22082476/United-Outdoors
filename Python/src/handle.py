@@ -3,6 +3,7 @@ import datetime
 import decimal
 import math
 import pandas as pd
+import re
 
 def setup_cursor(connection):
     connection = pyodbc.connect(connection)
@@ -95,22 +96,18 @@ def compare_rows(value1, value2):
         return True
     return False
 
-# Oude functies Ben/Thom
-"""
-def read(cursor, table, where):
+def house_number(address):
     try:
-        query = f"SELECT MAX(S_KEY) FROM {0} WHERE {1}", table , where
-        cursor.execute(query)
-        result = cursor.fetchall()
-    except pyodbc.Error:
-        print(query)  
-        result = None
-
-    cursor.commit()
-    cursor.close()
-
-    return result[0][0]
-
+        pattern = r'\b(\d+)\b'
+        matches = re.findall(pattern, address)
+        
+        if matches:
+            return matches[0]
+        else:
+            return None
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
 def handleOne (cursor, source, method):   
     for index, row in source.iterrows():
@@ -134,4 +131,3 @@ def handleTwo (cursor, source1, source2, method):
 
     cursor.commit()
     cursor.close()
-"""
