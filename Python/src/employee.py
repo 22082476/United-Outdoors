@@ -179,7 +179,6 @@ def northwind_employee ():
 
 
 def employee ():
-    test = Employees(adventure_employee(), aenc_employee(), northwind_employee())
-    return test
+    return Employees(adventure_employee(), aenc_employee(), northwind_employee())
 
 
