@@ -4,6 +4,26 @@ import os
 from handle import get_data, setup_cursor, house_number
 load_dotenv('.env')
 
+class Employees:
+    def __init__(self, adventure, aenc, northwind):
+        self.adventure = adventure
+        self.aenc = aenc
+        self.northwind = northwind
+
+    def get_employee(self, id):
+        if "AW_" in id:
+            matching_employees = [employee for employee in self.adventure if employee.employee_id == id]
+            return matching_employees[0] if matching_employees else None
+        elif "AC_" in id:
+            matching_employees = [employee for employee in self.aenc if employee.employee_id == id]
+            return matching_employees[0] if matching_employees else None
+        elif "NW_" in id:
+            matching_employees = [employee for employee in self.northwind if employee.employee_id == id]
+            return matching_employees[0] if matching_employees else None
+        else:
+            return None
+        
+
 class Employee:
     def __init__(self, employee_id, employee_full_name, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_sales_quota, employee_bonus, employee_commission_pct):
         self.employee_id = employee_id
@@ -41,16 +61,7 @@ class Employee:
         self.employee_sales_quota = employee_sales_quota
         self.employee_bonus = employee_bonus
         self.employee_commission_pct = employee_commission_pct
-
-
-def employee ():
-    #adventure_employee = adventure_employee()
-    #aenc_employee = aenc_employee()
-    #northwind_employee = northwind_employee()
-    adventure_employee()
-    aenc_employee()
-    northwind_employee()
-
+ 
 
 def adventure_employee ():
     adventure_salesperson = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.SalesPerson")
@@ -101,7 +112,7 @@ def adventure_employee ():
     adventure.rename(columns={"Name": "territory"}, inplace=True)
     #adventure = pd.merge(adventure, adventure_salesstore, left_on='BusinessEntityID', right_on='SalesPersonID', how='inner') Demographics mss veranderen
     
-    adventure["full_name"] = adventure["Suffix"] + " " + adventure["FirstName"]+ " " + adventure["MiddleName"] + " " + adventure["LastName"]
+    adventure["full_name"] = adventure["FirstName"]+ " " + adventure["MiddleName"] + " " + adventure["LastName"]
     adventure["manager"] = None
     adventure["salary"] = adventure["Rate"] * 36
     adventure["emp_id"] = "AW_" + adventure["BusinessEntityID"].astype(str)
@@ -131,15 +142,11 @@ def aenc_employee ():
     aenc.rename(columns={"steet": "address", "zip_code": "postal_code", "dept_name":"department"}, inplace=True)
     aenc.drop(['emp_fname', 'emp_lname', "manager_id", "dept_head_id"], axis=1, inplace=True)
 
-    #print(aenc.columns)
-    #print(len(aenc))
-    
     employees = []
 
     for index, row in aenc.iterrows():
         employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
     
-    #print(len(employees))
 
     return employees
 
@@ -163,17 +170,16 @@ def northwind_employee ():
     northwind.drop(['FirstName', 'LastName', 'ReportsTo', "Photo", "Notes", "RegionID", "Region"], axis=1, inplace=True)
     northwind.rename(columns={"Address": "address", "PostalCode": "postal_code", "EmployeeID":"emp_id", "HireDate": "start_date", "BirthDate":"birth_date", "City": "city", "Country":"country", "Region":"region", "HomePhone":"home_phone", "Title":"title", "TitleOfCourtesy":"title_of_courtesy", "RegionDescription":"region"}, inplace=True)
 
-    #print(northwind.columns)
-    #print(len(northwind))
-
     employees = []
 
     for index, row in northwind.iterrows():
         employees.append(Employee(row["emp_id"], row["full_name"], row["Extension"], None, None, None, None, row["start_date"], row["birth_date"], None, row["country"], row["region"], row["city"], row["postal_code"], row["address"], house_number(row["address"]), row["manager"], None, None, None, None, None, row["title"], row["title_of_courtesy"], None, row["TerritoryDescription"], row["country"], None, None, None, None, None, None, None))
 
-    #print(len(employees))
-
     return employees
 
+
+def employee ():
+    test = Employees(adventure_employee(), aenc_employee(), northwind_employee())
+    return test
 
 
