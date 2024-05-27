@@ -27,30 +27,44 @@ def aw_sales_currency():
 
 
 class ShipMethod:
-    def __init__(self, shipmethod_id, shipmethod_name, shipmethod_ship_base, shipmethod_ship_rate, company_name):
+    def __init__(self, shipmethod_id, shipmethod_name, shipmethod_ship_base, shipmethod_ship_rate):
         self.shipmethod_id = shipmethod_id
         self.shipmethod_name = shipmethod_name
         self.shipmethod_ship_base = shipmethod_ship_base
         self.shipmethod_ship_rate = shipmethod_ship_rate
-        self.company_name = company_name
 
 def aw_shipmethod():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
-    cursor_nw = setup_cursor(os.getenv('northwind'))
 
-    nw_shipper = get_data(cursor_nw, "dbo.Shippers")
     aw_shipmethod = get_data(cursor_aw, "Purchasing.ShipMethod")
 
-    nw_shipper = nw_shipper.loc[:, ['ShipperID', 'CompanyName']].rename(columns={'ShipperID':'shipper_id', 'CompanyName':'company_name'})
     aw_shipmethod = aw_shipmethod.loc[:, ['ShipMethodID', 'Name', 'ShipBase', 'ShipRate']].rename(columns={'ShipMethodID':'shipmethod_id', 'Name':'shipmethod_name', 'ShipBase':'shipmethod_ship_base', 'ShipRate':'shipmethod_ship_rate'})
 
-    shipmethod_merge = pd.merge(nw_shipper, aw_shipmethod, left_on='shipper_id', right_on='shipmethod_id', how='inner').drop(columns='shipper_id')
-
     ship_methods = []
-    for index, row in shipmethod_merge.iterrows():
-        ship_methods.append(ShipMethod(row['shipmethod_id'], row['shipmethod_name'], row['shipmethod_ship_base'], row['shipmethod_ship_rate'], row['company_name']))
+    for index, row in aw_shipmethod.iterrows():
+        ship_methods.append(ShipMethod(row['shipmethod_id'], row['shipmethod_name'], row['shipmethod_ship_base'], row['shipmethod_ship_rate']))
     print(len(ship_methods))
     return ship_methods
+
+
+
+class Shippers:
+    def __init__(self, shipper_id, company_name, Phone):
+        self.shipper_id = shipper_id
+        self.company_name = company_name
+        self.Phone = Phone
+
+def nw_shippers():
+    cursor_nw = setup_cursor(os.getenv('northwind'))
+    nw_shipper = get_data(cursor_nw, "dbo.Shippers")
+    nw_shipper = nw_shipper.loc[:, ['ShipperID', 'CompanyName', 'Phone']].rename(columns={'ShipperID':'shipper_id', 'CompanyName':'company_name', 'Phone':'Phone'})
+
+    shippers = []
+    for index, row in nw_shipper.iterrows():
+        shippers.append(Shippers(row['shipper_id'], row['company_name'], row['Phone']))
+    print(len(shippers))
+    return shippers
+
 
 
 
