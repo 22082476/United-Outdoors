@@ -417,7 +417,7 @@ CREATE TABLE sales_order (
     customer_region varchar(255),
     customer_city varchar(255),
     customer_zip_code varchar(255),
-    customer_address varchar(15),
+    customer_address varchar(255),
 
     /* Sales territory */
     sales_territory_id INT NOT NULL,
@@ -1238,4 +1238,24 @@ CREATE TABLE order_temp(
 
     change_date TIMESTAMP,
 )
+
+CREATE TABLE customer_temp (
+    S_KEY INT IDENTITY(1,1) PRIMARY KEY,
+
+	customer_id VARCHAR(255) NOT NULL,
+    customer_full_name varchar(255),
+    customer_person_type varchar(255),
+    customer_name_style varchar(255),
+    customer_title varchar(255),
+    customer_group varchar(255),
+    customer_territory_name varchar(255),
+    customer_company_name varchar(255),
+    customer_country varchar(255),
+    customer_region varchar(255),
+    customer_city varchar(255),
+    customer_zip_code varchar(255),
+    customer_address varchar(255),
+
+	change_date TIMESTAMP,
+);
 */

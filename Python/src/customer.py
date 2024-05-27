@@ -15,7 +15,7 @@ def customers():
 
     # insert_data(cursor, "customer_temp", ["customer_id"], customers) #for testing writing to db
     # Return the table and the primary key(s)
-    return customers, ['customer_id']
+    return customers
 
 def customers_adventureworks():
     cursor = setup_cursor(os.getenv("adventureworks"))
