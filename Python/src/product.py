@@ -47,6 +47,7 @@ RENAME_DICT = {
 }
 
 def products():
+    #cursor = setup_cursor(os.getenv("datawarehouse"))
     aw = products_adventureworks()
     nw = products_northwind()
     aenc = products_aenc()
@@ -62,9 +63,8 @@ def products():
 
     # insert_data(export_cursor, "order_temp", ["product_id"], products) #for testing writing to db
     # Return the table and the primary key(s)
-    return products, ['product_id']
+    return products
     
-
 def products_adventureworks():
     cursor_aw = setup_cursor(os.getenv("adventureworks"))
 
