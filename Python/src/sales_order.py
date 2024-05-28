@@ -148,6 +148,14 @@ def adventure_works():
     for x in employee_columns:
         region_merge[x] = None
 
+    data = []
+    employees = employee()
+    for x in employees.adventure:
+        convert = x.__dict__
+        data.append(convert)
+    
+    df_employees = pd.DataFrame(data)
+
     products_aw = products()
     products_merge = pd.merge(region_merge, products_aw, left_on='ProductID', right_on='product_id')
     
