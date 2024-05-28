@@ -70,7 +70,7 @@ def aenc ():
 
         print(row["unit_price"])
 
-    insert_data(setup_cursor(os.getenv("datawharehouse")), "sales_order", ["id", "line_id"], aenc_sales)
+    insert_data(setup_cursor(os.getenv("datawarehouse")), "sales_order", ["id", "line_id"], aenc_sales)
 
 def adventure_works():
     cursor = setup_cursor(os.getenv("adventureworks"))
