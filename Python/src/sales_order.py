@@ -19,8 +19,78 @@ def sales_order ():
     #nw_orders = get_data(setup_cursor(os.getenv("northwind")), "Orders")
     #nw_order_details = get_data(setup_cursor(os.getenv("northwind")), "OrderDetails")
       
-
 def aenc ():
+    aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
+    aenc_sales_order_item = get_data(setup_cursor(os.getenv("aenc")), "Sales_order_item")
+    aenc_region = get_data(setup_cursor(os.getenv("aenc")), "Region")
+
+    aenc_sales = pd.merge(aenc_sales_order, aenc_sales_order_item, on='id', how='inner')
+    aenc_sales = pd.merge(aenc_sales, aenc_region, on='region', how='inner')
+    aenc_sales["customer_id"] = "AC_" + aenc_sales["cust_id"].astype(str)
+    aenc_sales = pd.merge(aenc_sales, customers(), left_on='customer_id', right_on="customer_id", how='inner')
+    aenc_sales["product_id"] = "AC_" + aenc_sales["prod_id"].astype(str)
+    aenc_sales = pd.merge(aenc_sales, products(), left_on='product_id', right_on="product_id", how='inner') 
+    aenc_sales.drop(["cust_id", "prod_id"], axis=1, inplace=True)
+
+    aenc_sales["paymethod"] = None
+
+    aenc_sales["region_country"] = None
+    aenc_sales["region_state"] = None
+
+    aenc_sales["company_name"] = None
+
+    aenc_sales["unit_price"] = aenc_sales["product_list_price"].astype(float)
+    aenc_sales["revenue"] = aenc_sales["unit_price"].astype(float) * aenc_sales["quantity"].astype(int)
+    aenc_sales["freight"] = None  
+    aenc_sales["sub_total"] = aenc_sales["revenue"]
+    aenc_sales["total_due"] = aenc_sales["revenue"]
+
+    aenc_sales['order_date'] = pd.to_datetime(aenc_sales['order_date'])
+    aenc_sales['due_date'] = None
+    aenc_sales['currency_rate_date'] = None
+    aenc_sales['ship_date'] = pd.to_datetime(aenc_sales['ship_date'])
+    
+    for date_col in ['order_date', 'ship_date']:
+        aenc_sales[f'{date_col}_year'] = aenc_sales[date_col].dt.year
+        aenc_sales[f'{date_col}_quarter'] = aenc_sales[date_col].dt.quarter
+        aenc_sales[f'{date_col}_month'] = aenc_sales[date_col].dt.month
+        aenc_sales[f'{date_col}_day'] = aenc_sales[date_col].dt.day
+        aenc_sales[f'{date_col}_hour'] = aenc_sales[date_col].dt.hour
+        aenc_sales[f'{date_col}_minute'] = aenc_sales[date_col].dt.minute
+
+    aenc_sales['currency_rate_date_year'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+    aenc_sales['currency_rate_date_quarter'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+    aenc_sales['currency_rate_date_month'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+    aenc_sales['currency_rate_date_day'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+    aenc_sales['currency_rate_date_hour'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+    aenc_sales['currency_rate_date_minute'] = aenc_sales['currency_rate_date'].fillna(0).astype(int)
+
+    aenc_sales['due_date_year'] = aenc_sales['due_date'].fillna(0).astype(int)
+    aenc_sales['due_date_quarter'] = aenc_sales['due_date'].fillna(0).astype(int)
+    aenc_sales['due_date_month'] = aenc_sales['due_date'].fillna(0).astype(int)
+    aenc_sales['due_date_day'] = aenc_sales['due_date'].fillna(0).astype(int)
+    aenc_sales['due_date_hour'] = aenc_sales['due_date'].fillna(0).astype(int)
+    aenc_sales['due_date_minute'] = aenc_sales['due_date'].fillna(0).astype(int)
+
+    data = []
+    employees = employee()
+    for x in employees.adventure:
+        convert = x.__dict__
+        data.append(convert)
+    
+    df_employees = pd.DataFrame(data)
+    products_ac = products()
+    aenc_sales = pd.merge(aenc_sales, products_ac, on='product_id')
+    aenc_sales = pd.merge(aenc_sales, customers(), on="customer_id", how='inner')
+    aenc_sales = pd.merge(aenc_sales, df_employees, left_on="sales_rep", right_on='employee_id', how='left')
+    aenc_sales.rename(columns={"sales_rep":"employee_id"}, inplace=True)
+
+    export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], aenc_sales.head(4))
+
+    return aenc_sales
+    
+def aenc1 ():
     aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
     aenc_sales_order_item = get_data(setup_cursor(os.getenv("aenc")), "Sales_order_item")
     aenc_region = get_data(setup_cursor(os.getenv("aenc")), "Region")
@@ -37,40 +107,29 @@ def aenc ():
     aenc_sales = aenc_sales.head(4)
 
     # Iets anders op bedenken
-    for index, row in aenc_sales.iterrows():
-        
-        row = set_employee(row, "employee", employee().get_employee("AC_" + row["sales_rep"]))
-        row.drop("sales_rep", inplace=True)
     
-        row = set_date(row, "order_date", date(row["order_date"]))
-        row = set_date(row, "ship_date", date(row["ship_date"]))
-        row.drop(["order_date", "ship_date"], inplace=True)
-        row = set_date(row, "due_date", DateTable(None, None, None, None, None, None, None))
-        row["currency_rate_date"] = None
+        
+    aenc_sales = set_employee(aenc_sales, "employee", employee().get_employee("AC_" + aenc_sales["sales_rep"]))
+    aenc_sales.drop("sales_rep", inplace=True)
 
-        row = set_address(row, "bill", AddressTable(None, None, None, None, None, None))
-        row = set_address(row, "ship", AddressTable(None, None, None, None, None, None))
+    aenc_sales = set_date(aenc_sales, "order_date", date(aenc_sales["order_date"]))
+    aenc_sales = set_date(aenc_sales, "ship_date", date(aenc_sales["ship_date"]))
+    aenc_sales.drop(["order_date", "ship_date"], inplace=True)
+    aenc_sales = set_date(aenc_sales, "due_date", DateTable(None, None, None, None, None, None, None))
+    aenc_sales["currency_rate_date"] = None
 
-        row = set_shipmethod(row, ShipMethod(None, None, None, None))
+    aenc_sales = set_address(aenc_sales, "bill", AddressTable(None, None, None, None, None, None))
+    aenc_sales = set_address(aenc_sales, "ship", AddressTable(None, None, None, None, None, None))
 
-        row["paymethod"] = None
+    aenc_sales = set_shipmethod(aenc_sales, ShipMethod(None, None, None, None))
 
-        row = set_currency(row, "from", SalesCurrency(None, None))
-        row = set_currency(row, "to", SalesCurrency(None, None))
 
-        row["region_country"] = None
-        row["region_state"] = None
+    aenc_sales = set_currency(aenc_sales, "from", SalesCurrency(None, None))
+    aenc_sales = set_currency(aenc_sales, "to", SalesCurrency(None, None))
 
-        row["company_name"] = None
 
-        row["unit_price"] = float(row["product_list_price"])
-        row["revenue"] = float(row["unit_price"]) * int(row["quantity"])
-        row["tax_amt"] = None
-        row["freight"] = None  
-        row["sub_total"] = row["revenue"]
-        row["total_due"] = row["revenue"]
 
-        print(row["unit_price"])
+    print(aenc_sales["unit_price"])
 
     insert_data(setup_cursor(os.getenv("datawarehouse")), "sales_order", ["id", "line_id"], aenc_sales)
 
@@ -187,79 +246,78 @@ def set_addresses(address, ids, count, addresses):
     return merge
     
 
-def set_currency (row, attribute, currency):
-    row[attribute + "_currency_code"] = currency.currency_code
-    row[attribute + "_currency_name"] = currency.currency_name
+def set_currency (data, attribute, currency):
+    data[attribute + "_currency_code"] = currency.currency_code
+    data[attribute + "_currency_name"] = currency.currency_name
 
-    return row
+    return data
 
-def set_date (row, attribute, date):
-    row[attribute + "_year"] = date.year
-    row[attribute + "_quarter"] = date.quarter
-    row[attribute + "_month"] = date.month
-    row[attribute + "_day"] = date.day
-    row[attribute + "_hour"] = date.hour
-    row[attribute + "_minute"] = date.minute
-    row[attribute + "_date"] = date.date
+def set_date (data, attribute, date):
+    data[attribute + "_year"] = date.year
+    data[attribute + "_quarter"] = date.quarter
+    data[attribute + "_month"] = date.month
+    data[attribute + "_day"] = date.day
+    data[attribute + "_hour"] = date.hour
+    data[attribute + "_minute"] = date.minute
+    data[attribute + "_date"] = date.date
 
-    return row
+    return data
 
-def set_address (row, attribute, address):
-    row[attribute + "_to_address_country"] = address.country
-    row[attribute + "_to_address_region"] = address.region
-    row[attribute + "_to_address_city"] = address.city
-    row[attribute + "_to_address_postalcode"] = address.postalcode
-    row[attribute + "_to_address_street"] = address.street
-    row[attribute + "_to_address"] = address.address
+def set_address (data, attribute, address):
+    data[attribute + "_to_address_region"] = address.region
+    data[attribute + "_to_address_city"] = address.city
+    data[attribute + "_to_address_postalcode"] = address.postalcode
+    data[attribute + "_to_address_street"] = address.street
+    data[attribute + "_to_address"] = address.address
 
-    return row
+    return data
 
-def set_shipmethod (row, shipmethod):
-    row["shipmethod_id"] = shipmethod.shipmethod_id
-    row["shipmethod_name"] = shipmethod.shipmethod_name
-    row["shipmethod_base"] = shipmethod.shipmethod_ship_base
-    row["shipmethod_rate"] = shipmethod.shipmethod_ship_rate
+def set_shipmethod (data, shipmethod):
+    data["shipmethod_id"] = shipmethod.shipmethod_id
+    data["shipmethod_name"] = shipmethod.shipmethod_name
+    data["shipmethod_base"] = shipmethod.shipmethod_ship_base
+    data["shipmethod_rate"] = shipmethod.shipmethod_ship_rate
 
 
-    return row
+    return data
 
-def set_employee(row, attribute, employee):
-    row[attribute + "_id"] = employee.employee_id
-    row[attribute + "_full_name"] = employee.employee_full_name
-    row[attribute + "_extention"] = employee.employee_extention
-    row[attribute + "_sales_YTD"] = employee.employee_sales_YTD
-    row[attribute + "_sales_last_year"] = employee.employee_sales_last_year
-    row[attribute + "_department_head"] = employee.employee_department_head
-    row[attribute + "_department"] = employee.employee_department
-    row[attribute + "_start_date"] = employee.employee_start_date
-    row[attribute + "_birth_date"] = employee.employee_birth_date
-    row[attribute + "_salary"] = employee.employee_salary
-    row[attribute + "_country"] = employee.employee_country
-    row[attribute + "_region"] = employee.employee_region
-    row[attribute + "_city"] = employee.employee_city
-    row[attribute + "_zip_code"] = employee.employee_zip_code
-    row[attribute + "_street_name"] = employee.employee_street_name
-    row[attribute + "_house_number"] = employee.employee_house_number
-    row[attribute + "_manager"] = employee.employee_manager
-    row[attribute + "_health_insurance"] = employee.employee_health_insurance
-    row[attribute + "_life_insurance"] = employee.employee_life_insurance
-    row[attribute + "_day_care"] = employee.employee_day_care
-    row[attribute + "_sex"] = employee.employee_sex
-    row[attribute + "_termination_date"] = employee.employee_termination_date
-    row[attribute + "_title"] = employee.employee_title
-    row[attribute + "_title_of_courtesy"] = employee.employee_title_of_courtesy
-    row[attribute + "_group"] = employee.employee_group
-    row[attribute + "_territory"] = employee.employee_territory
-    row[attribute + "_country_region_code"] = employee.employee_country_region_code
-    row[attribute + "_vactions_hours"] = employee.employee_vactions_hours
-    row[attribute + "_sick_leave_hours"] = employee.employee_sick_leave_hours
-    row[attribute + "_martial_status"] = employee.employee_martial_status
-    row[attribute + "_orginanizion_level"] = employee.employee_orginanizion_level
-    row[attribute + "_sales_quota"] = employee.employee_sales_quota
-    row[attribute + "_bonus"] = employee.employee_bonus
-    row[attribute + "_commission_pct"] = employee.employee_commission_pct
+def set_employee(data, attribute, employee):
+    data[attribute + "_id"] = employee.employee_id
+    data[attribute + "_full_name"] = employee.employee_full_name
+    data[attribute + "_extention"] = employee.employee_extention
+    data[attribute + "_sales_YTD"] = employee.employee_sales_YTD
+    data[attribute + "_sales_last_year"] = employee.employee_sales_last_year
+    data[attribute + "_department_head"] = employee.employee_department_head
+    data[attribute + "_department"] = employee.employee_department
+    data[attribute + "_start_date"] = employee.employee_start_date
+    data[attribute + "_birth_date"] = employee.employee_birth_date
+    data[attribute + "_salary"] = employee.employee_salary
+    data[attribute + "_country"] = employee.employee_country
+    data[attribute + "_region"] = employee.employee_region
+    data[attribute + "_city"] = employee.employee_city
+    data[attribute + "_zip_code"] = employee.employee_zip_code
+    data[attribute + "_street_name"] = employee.employee_street_name
+    data[attribute + "_house_number"] = employee.employee_house_number
+    data[attribute + "_manager"] = employee.employee_manager
+    data[attribute + "_health_insurance"] = employee.employee_health_insurance
+    data[attribute + "_life_insurance"] = employee.employee_life_insurance
+    data[attribute + "_day_care"] = employee.employee_day_care
+    data[attribute + "_sex"] = employee.employee_sex
+    data[attribute + "_termination_date"] = employee.employee_termination_date
+    data[attribute + "_title"] = employee.employee_title
+    data[attribute + "_title_of_courtesy"] = employee.employee_title_of_courtesy
+    data[attribute + "_group"] = employee.employee_group
+    data[attribute + "_territory"] = employee.employee_territory
+    data[attribute + "_country_region_code"] = employee.employee_country_region_code
+    data[attribute + "_vactions_hours"] = employee.employee_vactions_hours
+    data[attribute + "_sick_leave_hours"] = employee.employee_sick_leave_hours
+    data[attribute + "_martial_status"] = employee.employee_martial_status
+    data[attribute + "_orginanizion_level"] = employee.employee_orginanizion_level
+    data[attribute + "_sales_quota"] = employee.employee_sales_quota
+    data[attribute + "_bonus"] = employee.employee_bonus
+    data[attribute + "_commission_pct"] = employee.employee_commission_pct
 
-    return row
+    return data
 
 
 employee_columns = [
