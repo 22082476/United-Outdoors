@@ -34,6 +34,7 @@ def aenc ():
     print(len(aenc_sales))
     aenc_sales = aenc_sales.head(4)
 
+    # Iets anders op bedenken
     for index, row in aenc_sales.iterrows():
         
         row = set_employee(row, "employee", employee().get_employee("AC_" + row["sales_rep"]))
@@ -69,7 +70,6 @@ def aenc ():
 
         print(row["unit_price"])
 
-        
     insert_data(setup_cursor(os.getenv("datawharehouse")), "sales_order", ["id", "line_id"], aenc_sales)
 
 def adventure_works():
@@ -137,12 +137,14 @@ def adventure_works():
     shipmethod_merge['paymethod'] = np.where(shipmethod_merge['CreditCardID'].notna(), 'creditcard', 'else')
     shipmethod_merge = shipmethod_merge.drop(columns=['CreditCardID'])
 
+    # Ik snapte niet welke region dit zou moeten zijn, met bijv. de region code uit sales_territory kan je geen state pakken
     region_merge = shipmethod_merge
     region_merge['region_country'] = None
     region_merge['region_state'] = None
     region_merge['region'] = None
     region_merge['company_name'] = None
 
+    # Ik kan niet mergen met een klasse, moet nog wat op verzonnen worden.
     for x in employee_columns:
         region_merge[x] = None
 
@@ -150,8 +152,9 @@ def adventure_works():
     products_merge = pd.merge(region_merge, products_aw, left_on='ProductID', right_on='product_id')
     
     export_cursor = setup_cursor(os.getenv("datawarehouse"))
-    test_data = products_merge.head(1000).copy()
 
+    # Om ff te testen
+    test_data = products_merge.head(1000).copy()
     insert_data(export_cursor, "sales_order", ["id", "line_id"], test_data)
     
     return 0
