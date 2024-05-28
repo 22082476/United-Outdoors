@@ -3,6 +3,8 @@ from customer import customers
 from product import products
 from handle import setup_cursor, get_data, insert_data, date
 from classes import DateTable, AddressTable, ShipMethod, SalesCurrency
+from dotenv import load_dotenv
+load_dotenv('.env')
 import os
 import pandas as pd
 import numpy as np
@@ -111,6 +113,14 @@ def adventure_works():
         sales_merge[f'{date_col}_hour'] = sales_merge[date_col].dt.hour
         sales_merge[f'{date_col}_minute'] = sales_merge[date_col].dt.minute
 
+    # Lelijk maar het werkt
+    sales_merge['currency_rate_date_year'] = sales_merge['currency_rate_date_year'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_quarter'] = sales_merge['currency_rate_date_quarter'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_month'] = sales_merge['currency_rate_date_month'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_day'] = sales_merge['currency_rate_date_day'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_hour'] = sales_merge['currency_rate_date_hour'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_minute'] = sales_merge['currency_rate_date_minute'].fillna(0).astype(int)
+
     customer_merge = pd.merge(sales_merge, customers(), left_on='CustomerID', right_on="customer_id", how='inner')
     customer_merge = customer_merge.drop(columns=['CustomerID'])
     
@@ -145,19 +155,29 @@ def adventure_works():
     region_merge['company_name'] = None
 
     # Ik kan niet mergen met een klasse, moet nog wat op verzonnen worden.
-    for x in employee_columns:
-        region_merge[x] = None
+    # for x in employee_columns:
+    #   region_merge[x] = None
 
+    data = []
+    employees = employee()
+    for x in employees.adventure:
+        convert = x.__dict__
+        data.append(convert)
+    
+    df_employees = pd.DataFrame(data)
     products_aw = products()
     products_merge = pd.merge(region_merge, products_aw, left_on='ProductID', right_on='product_id')
-    
-    export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    products_merge['SalesPersonID'] = products_merge['SalesPersonID'].str.replace('.0', '', regex=False)
 
-    # Om ff te testen
-    test_data = products_merge.head(1000).copy()
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_data)
+    employee_merge = pd.merge(products_merge, df_employees, left_on='SalesPersonID', right_on='employee_id', how='left')
+    employee_merge = employee_merge.drop(columns=['SalesPersonID'])
     
-    return 0
+    # Om ff te testen, dit werkt
+    export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    test_data = employee_merge.head(1000)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_data)
+
+    return employee_merge
 
 def set_addresses(address, ids, count, addresses):
     text = 'ship_to_address_' if count < 1 else 'bill_to_address_'
