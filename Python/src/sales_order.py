@@ -155,6 +155,78 @@ def adventure_works():
     sales_merge["CustomerID"] = "AW_" + sales_merge["CustomerID"].astype(str)
 
     sales_merge = sales_merge.rename(columns={'SalesOrderID':'id','SalesOrderDetailID':'line_id','UnitPrice':'unit_price','OrderQty':'quantity','TotalDue':'total_due','Freight':'freight','TaxAmt':'tax_amt','SubTotal':'sub_total'})
+    sales_merge['revenue'] = sales_merge['total_due']
+    sales_merge = pd.merge(sales_merge, currencies, left_on='CurrencyRateID', right_on='CurrencyRateID', how='left')
+    
+    sales_merge['OrderDate'] = pd.to_datetime(sales_merge['OrderDate'])
+    sales_merge['DueDate'] = pd.to_datetime(sales_merge['DueDate'])
+    sales_merge['ShipDate'] = pd.to_datetime(sales_merge['ShipDate'])
+    sales_merge['CurrencyRateDate'] = pd.to_datetime(sales_merge['CurrencyRateDate'])
+    sales_merge = sales_merge.rename(columns={'OrderDate': 'order_date', 'DueDate':'due_date','ShipDate':'ship_date', 'CurrencyRateDate':'currency_rate_date'})
+    
+    for date_col in ['order_date', 'due_date', 'ship_date', 'currency_rate_date']:
+        sales_merge[f'{date_col}_year'] = sales_merge[date_col].dt.year
+        sales_merge[f'{date_col}_quarter'] = sales_merge[date_col].dt.quarter
+        sales_merge[f'{date_col}_month'] = sales_merge[date_col].dt.month
+        sales_merge[f'{date_col}_day'] = sales_merge[date_col].dt.day
+        sales_merge[f'{date_col}_hour'] = sales_merge[date_col].dt.hour
+        sales_merge[f'{date_col}_minute'] = sales_merge[date_col].dt.minute
+
+    sales_merge['currency_rate_date_year'] = sales_merge['currency_rate_date_year'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_quarter'] = sales_merge['currency_rate_date_quarter'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_month'] = sales_merge['currency_rate_date_month'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_day'] = sales_merge['currency_rate_date_day'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_hour'] = sales_merge['currency_rate_date_hour'].fillna(0).astype(int)
+    sales_merge['currency_rate_date_minute'] = sales_merge['currency_rate_date_minute'].fillna(0).astype(int)
+
+    customer_merge = pd.merge(sales_merge, customers(), left_on='CustomerID', right_on="customer_id", how='inner')
+    customer_merge = customer_merge.drop(columns=['CustomerID'])
+    
+    territory_merge = pd.merge(customer_merge, sales_territory, left_on='TerritoryID', right_on='TerritoryID', how='left')
+    territory_merge = territory_merge.rename(columns={'TerritoryID':'sales_territory_id'})
+  
+    merge = pd.merge(address, state_province, left_on='StateProvinceID', right_on='StateProvinceID', how='left')
+    merge2 = pd.merge(merge, country_region, left_on='CountryRegionCode', right_on='CountryRegionCode', how='left')
+    addresses = merge2.loc[:, ['AddressID', 'AddressLine1', 'City', 'PostalCode', 'Name_x', 'Name_y']].rename(columns={'AddressLine1':'address', 'City':'city', 'PostalCode':'postalcode', 'Name_x':'region', 'Name_y':'country'})
+    
+    address_types = ['ShipToAddressID', 'BillToAddressID']
+    count = 0
+    for x in address_types:
+        ids = pd.DataFrame(territory_merge[x].drop_duplicates())
+        aight = set_addresses(x, ids, count, addresses)
+        territory_merge = pd.merge(territory_merge, aight, left_on=x, right_on=x)
+        count += 1
+
+    territory_merge = territory_merge.drop(columns=['BillToAddressID','ShipToAddressID'])
+
+    shipmethod = shipmethod.loc[:,['ShipMethodID','shipmethod_name','shipmethod_ship_base','shipmethod_ship_rate']].rename(columns={'ShipMethodID':'shipmethod_id'})
+    shipmethod_merge = pd.merge(territory_merge, shipmethod, left_on='ShipMethodID', right_on='shipmethod_id')
+    shipmethod_merge = shipmethod_merge.drop(columns=['ShipMethodID'])
+    shipmethod_merge['paymethod'] = np.where(shipmethod_merge['CreditCardID'].notna(), 'creditcard', 'else')
+    shipmethod_merge = shipmethod_merge.drop(columns=['CreditCardID'])
+
+    region_merge = shipmethod_merge
+    region_merge['region_country'] = None
+    region_merge['region_state'] = None
+    region_merge['region'] = None
+    region_merge['company_name'] = None
+
+    data = []
+    employees = employee()
+    for x in employees.adventure:
+        convert = x.__dict__
+        data.append(convert)
+    
+    df_employees = pd.DataFrame(data)
+    products_aw = products()
+    products_merge = pd.merge(region_merge, products_aw, left_on='ProductID', right_on='product_id')
+    products_merge['SalesPersonID'] = products_merge['SalesPersonID'].str.replace('.0', '', regex=False)
+
+    employee_merge = pd.merge(products_merge, df_employees, left_on='SalesPersonID', right_on='employee_id', how='left')
+    employee_merge = employee_merge.drop(columns=['SalesPersonID'])
+    
+    export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], employee_merge)
 
 def set_addresses(address, ids, count, addresses):
     text = 'ship_to_address_' if count < 1 else 'bill_to_address_'
