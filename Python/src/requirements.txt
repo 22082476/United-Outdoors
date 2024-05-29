@@ -1,3 +1,6 @@
 pandas
 pyodbc
 python-dotenv
+scikit-learn
+matplotlib
+statsmodels
