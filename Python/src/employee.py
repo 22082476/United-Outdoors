@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import os
 from handle import get_data, setup_cursor, house_number
-from classes import Employee, Employees
+from classes import Employee, Employees, DateHandler
 load_dotenv('.env')
 
 
@@ -87,9 +87,30 @@ def aenc_employee ():
     aenc.drop(['emp_fname', 'emp_lname', "manager_id", "dept_head_id"], axis=1, inplace=True)
 
     employees = []
+    date_handler = DateHandler()
+    
+    
 
     for index, row in aenc.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
+        start_date = row["start_date"].split(" ")
+        brith_date = row["birth_date"].split(" ")
+        termination_date= row["termination_date"]
+
+        if pd.notnull(row["termination_date"]):
+            termination_date = termination_date.split(" ")
+            
+            termination_date = date_handler.format_date(termination_date[0].split("-")[2],date_handler.get_month_number(termination_date[0].split("-")[1]), termination_date[0].split("-")[0], termination_date[1])
+            print(termination_date)
+        else:
+            termination_date = None
+            
+        employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], 
+                                  date_handler.format_date(start_date[0].split("-")[0], date_handler.get_month_number(start_date[0].split("-")[1]), start_date[0].split("-")[2], start_date[1]), 
+                                  date_handler.format_date(brith_date[0].split("-")[0], date_handler.get_month_number(brith_date[0].split("-")[1]), brith_date[0].split("-")[2], brith_date[1]), 
+                                  row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], 
+                                  row["bene_life_ins"], row["bene_day_care"], row["sex"],  
+                                    termination_date, 
+                                    None, None, None, None, None, None, None, None, None, None, None, None))
     
 
     return employees

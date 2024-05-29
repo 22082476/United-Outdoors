@@ -375,7 +375,7 @@ CREATE TABLE sales_order (
     due_date_day varchar(2),
     due_date_hour varchar(2),
     due_date_minute varchar(2),
-    due_date DATETIME NOT NULL,
+    due_date DATETIME,
 
     /* Date */
     ship_date_year varchar(4),
@@ -384,7 +384,7 @@ CREATE TABLE sales_order (
     ship_date_day varchar(2),
     ship_date_hour varchar(2),
     ship_date_minute varchar(2),
-    ship_date DATETIME NOT NULL,
+    ship_date DATETIME NULL,
 
     /* Date */
     currency_rate_date_year varchar(4),
@@ -435,13 +435,13 @@ CREATE TABLE sales_order (
     bill_to_address varchar(255) NOT NULL,
 
     /* Shipmethod */
-    shipmethod_id INT NOT NULL,
-    shipmethod_name varchar(255) NOT NULL,
+    shipmethod_id INT,
+    shipmethod_name varchar(255),
     shipmethod_ship_base DECIMAL(19,4),
     shipmethod_ship_rate DECIMAL(19,4),
 
     /* paymethod */
-    paymethod varchar(255) NOT NULL,
+    paymethod varchar(255),
 
     /* Currency */
     from_currency_code varchar(255),

@@ -42,6 +42,7 @@ def aenc ():
     aenc_sales["unit_price"] = aenc_sales["product_list_price"].astype(float)
     aenc_sales["revenue"] = aenc_sales["unit_price"].astype(float) * aenc_sales["quantity"].astype(int)
     aenc_sales["freight"] = None  
+    aenc_sales["tax_amt"] = None
     aenc_sales["sub_total"] = aenc_sales["revenue"]
     aenc_sales["total_due"] = aenc_sales["revenue"]
 
@@ -74,64 +75,53 @@ def aenc ():
 
     data = []
     employees = employee()
-    for x in employees.adventure:
+    for x in employees.aenc:
         convert = x.__dict__
         data.append(convert)
     
     df_employees = pd.DataFrame(data)
-    products_ac = products()
-    aenc_sales = pd.merge(aenc_sales, products_ac, on='product_id')
-    aenc_sales = pd.merge(aenc_sales, customers(), on="customer_id", how='inner')
+    aenc_sales["sales_rep"] = "AC_" + aenc_sales["sales_rep"].astype(str)
     aenc_sales = pd.merge(aenc_sales, df_employees, left_on="sales_rep", right_on='employee_id', how='left')
     aenc_sales.rename(columns={"sales_rep":"employee_id"}, inplace=True)
+    aenc_sales["employee_id"]
+
+    aenc_sales["sales_territory_id"] = None
+    aenc_sales["sales_territory_name"] = None
+    aenc_sales["sales_territory_YTD"] = None
+    aenc_sales["sales_territory_sales_last_year"] = None
+    aenc_sales["sales_territory_cost_YTD"] = None
+    aenc_sales["sales_territory_cost_last_year"] = None
+
+    aenc_sales["ship_to_address_country"] = aenc_sales["customer_country"]
+    aenc_sales["ship_to_address_region"] = aenc_sales["customer_region"]
+    aenc_sales["ship_to_address_city"] = aenc_sales["customer_city"]
+    aenc_sales["ship_to_address_postalcode"] = aenc_sales["customer_zip_code"]
+    aenc_sales["ship_to_address"] = aenc_sales["customer_address"]
+
+    aenc_sales["bill_to_address_country"] = aenc_sales["customer_country"]
+    aenc_sales["bill_to_address_region"] = aenc_sales["customer_region"]
+    aenc_sales["bill_to_address_city"] = aenc_sales["customer_city"]
+    aenc_sales["bill_to_address_postalcode"] = aenc_sales["customer_zip_code"]
+    aenc_sales["bill_to_address"] = aenc_sales["customer_address"]
+
+    aenc_sales["shipmethod_id"] = None
+    aenc_sales["shipmethod_name"] = None
+    aenc_sales["shipmethod_ship_base"] = None
+    aenc_sales["shipmethod_ship_rate"] = None
+
+    aenc_sales["paymethod"] = None
+
+    aenc_sales["from_currency_code"] = None
+    aenc_sales["from_currency_name"] = None
+
+    aenc_sales["to_currency_code"] = None
+    aenc_sales["to_currency_name"] = None
 
     export_cursor = setup_cursor(os.getenv("datawarehouse"))
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], aenc_sales.head(4))
+    
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], aenc_sales.head(10))
 
     return aenc_sales
-    
-def aenc1 ():
-    aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
-    aenc_sales_order_item = get_data(setup_cursor(os.getenv("aenc")), "Sales_order_item")
-    aenc_region = get_data(setup_cursor(os.getenv("aenc")), "Region")
-
-    aenc_sales = pd.merge(aenc_sales_order, aenc_sales_order_item, on='id', how='inner')
-    aenc_sales = pd.merge(aenc_sales, aenc_region, on='region', how='inner')
-    aenc_sales["customer_id"] = "AC_" + aenc_sales["cust_id"].astype(str)
-    aenc_sales = pd.merge(aenc_sales, customers(), left_on='customer_id', right_on="customer_id", how='inner')
-    aenc_sales["product_id"] = "AC_" + aenc_sales["prod_id"].astype(str)
-    aenc_sales = pd.merge(aenc_sales, products(), left_on='product_id', right_on="product_id", how='inner') 
-    aenc_sales.drop(["cust_id", "prod_id"], axis=1, inplace=True)
-    print(aenc_sales.columns)
-    print(len(aenc_sales))
-    aenc_sales = aenc_sales.head(4)
-
-    # Iets anders op bedenken
-    
-        
-    aenc_sales = set_employee(aenc_sales, "employee", employee().get_employee("AC_" + aenc_sales["sales_rep"]))
-    aenc_sales.drop("sales_rep", inplace=True)
-
-    aenc_sales = set_date(aenc_sales, "order_date", date(aenc_sales["order_date"]))
-    aenc_sales = set_date(aenc_sales, "ship_date", date(aenc_sales["ship_date"]))
-    aenc_sales.drop(["order_date", "ship_date"], inplace=True)
-    aenc_sales = set_date(aenc_sales, "due_date", DateTable(None, None, None, None, None, None, None))
-    aenc_sales["currency_rate_date"] = None
-
-    aenc_sales = set_address(aenc_sales, "bill", AddressTable(None, None, None, None, None, None))
-    aenc_sales = set_address(aenc_sales, "ship", AddressTable(None, None, None, None, None, None))
-
-    aenc_sales = set_shipmethod(aenc_sales, ShipMethod(None, None, None, None))
-
-
-    aenc_sales = set_currency(aenc_sales, "from", SalesCurrency(None, None))
-    aenc_sales = set_currency(aenc_sales, "to", SalesCurrency(None, None))
-
-
-
-    print(aenc_sales["unit_price"])
-
-    insert_data(setup_cursor(os.getenv("datawarehouse")), "sales_order", ["id", "line_id"], aenc_sales)
 
 def adventure_works():
     cursor = setup_cursor(os.getenv("adventureworks"))
@@ -226,6 +216,7 @@ def adventure_works():
     employee_merge = employee_merge.drop(columns=['SalesPersonID'])
     
     export_cursor = setup_cursor(os.getenv("datawarehouse"))
+
     insert_data(export_cursor, "sales_order", ["id", "line_id"], employee_merge)
 
 def set_addresses(address, ids, count, addresses):

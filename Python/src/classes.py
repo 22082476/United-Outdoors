@@ -140,3 +140,7 @@ class DateHandler:
             input_month_str = str(int(input_month_str))
         # Look up the month number in the mapping dictionary
         return self.month_mapping.get(input_month_str, None)
+    
+    def format_date (self, day, month, year, time):
+        print(f"{year}-{month}-{day} {time}")
+        return f"{year}-{month}-{day} {time}" 
