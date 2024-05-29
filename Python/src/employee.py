@@ -2,66 +2,10 @@ from dotenv import load_dotenv
 import pandas as pd
 import os
 from handle import get_data, setup_cursor, house_number
+from classes import Employee, Employees, DateHandler
 load_dotenv('.env')
 
-class Employees:
-    def __init__(self, adventure, aenc, northwind):
-        self.adventure = adventure
-        self.aenc = aenc
-        self.northwind = northwind
 
-    def get_employee(self, id):
-        if "AW_" in id:
-            matching_employees = [employee for employee in self.adventure if employee.employee_id == id]
-            return matching_employees[0] if matching_employees else None
-        elif "AC_" in id:
-            matching_employees = [employee for employee in self.aenc if employee.employee_id == id]
-            return matching_employees[0] if matching_employees else None
-        elif "NW_" in id:
-            matching_employees = [employee for employee in self.northwind if employee.employee_id == id]
-            return matching_employees[0] if matching_employees else None
-        else:
-            return None
-        
-
-class Employee:
-    def __init__(self, employee_id, employee_full_name, employee_extention, employee_sales_YTD, employee_sales_last_year, employee_department_head, employee_department, employee_start_date, employee_birth_date, employee_salary, employee_country, employee_region, employee_city, employee_zip_code, employee_street_name, employee_house_number, employee_manager, employee_health_insurance, employee_life_insurance, employee_day_care, employee_sex, employee_termination_date, employee_title, employee_title_of_courtesy, employee_group, employee_territory, employee_country_region_code, employee_vactions_hours, employee_sick_leave_hours, employee_martial_status, employee_orginanizion_level, employee_sales_quota, employee_bonus, employee_commission_pct):
-        self.employee_id = employee_id
-        self.employee_full_name = employee_full_name
-        self.employee_extention = employee_extention
-        self.employee_sales_YTD = employee_sales_YTD
-        self.employee_sales_last_year = employee_sales_last_year
-        self.employee_department_head = employee_department_head
-        self.employee_department = employee_department
-        self.employee_start_date = employee_start_date
-        self.employee_birth_date = employee_birth_date
-        self.employee_salary = employee_salary
-        self.employee_country = employee_country
-        self.employee_region = employee_region
-        self.employee_city = employee_city
-        self.employee_zip_code = employee_zip_code
-        self.employee_street_name = employee_street_name
-        self.employee_house_number = employee_house_number
-        self.employee_manager = employee_manager
-        self.employee_health_insurance = employee_health_insurance
-        self.employee_life_insurance = employee_life_insurance
-        self.employee_day_care = employee_day_care
-        self.employee_sex = employee_sex
-        self.employee_termination_date = employee_termination_date
-        self.employee_title = employee_title
-        self.employee_title_of_courtesy = employee_title_of_courtesy
-        self.employee_group = employee_group
-        self.employee_territory = employee_territory
-        self.employee_country_region_code = employee_country_region_code
-        self.employee_vactions_hours = employee_vactions_hours
-        self.employee_sick_leave_hours = employee_sick_leave_hours
-        self.employee_martial_status = employee_martial_status
-        self.employee_orginanizion_level = employee_orginanizion_level
-        #self.employee_demographics = employee_demographics #waar moet het vandaan komen?
-        self.employee_sales_quota = employee_sales_quota
-        self.employee_bonus = employee_bonus
-        self.employee_commission_pct = employee_commission_pct
- 
 
 def adventure_employee ():
     adventure_salesperson = get_data(setup_cursor(os.getenv('adventureworks')), "Sales.SalesPerson")
@@ -143,9 +87,29 @@ def aenc_employee ():
     aenc.drop(['emp_fname', 'emp_lname', "manager_id", "dept_head_id"], axis=1, inplace=True)
 
     employees = []
+    date_handler = DateHandler()
+    
+    
 
     for index, row in aenc.iterrows():
-        employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], row["start_date"], row["birth_date"], row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], row["bene_life_ins"], row["bene_day_care"], row["sex"], row["termination_date"], None, None, None, None, None, None, None, None, None, None, None, None))
+        start_date = row["start_date"].split(" ")
+        brith_date = row["birth_date"].split(" ")
+        termination_date= row["termination_date"]
+
+        if pd.notnull(row["termination_date"]):
+            termination_date = termination_date.split(" ")
+            
+            termination_date = date_handler.format_date(termination_date[0].split("-")[2],date_handler.get_month_number(termination_date[0].split("-")[1]), termination_date[0].split("-")[0], termination_date[1])
+        else:
+            termination_date = None
+            
+        employees.append(Employee(row["emp_id"], row["full_name"], None, None, None, row["department_head"], row["department"], 
+                                  date_handler.format_date(start_date[0].split("-")[0], date_handler.get_month_number(start_date[0].split("-")[1]), start_date[0].split("-")[2], start_date[1]), 
+                                  date_handler.format_date(brith_date[0].split("-")[0], date_handler.get_month_number(brith_date[0].split("-")[1]), brith_date[0].split("-")[2], brith_date[1]), 
+                                  row["salary"], row["country"], row["region"], row["city"], row["postal_code"], row["street"], house_number(row["street"]), row["manager"], row["bene_health_ins"], 
+                                  row["bene_life_ins"], row["bene_day_care"], row["sex"],  
+                                    termination_date, 
+                                    None, None, None, None, None, None, None, None, None, None, None, None))
     
 
     return employees

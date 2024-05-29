@@ -215,7 +215,6 @@ CREATE TABLE bonus (
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -270,7 +269,6 @@ CREATE TABLE employee_pay_history (
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -342,14 +340,12 @@ CREATE TABLE employee_deparment_history (
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
 
     change_date TIMESTAMP,
 );
-
 CREATE TABLE sales_order (
     S_KEY INT IDENTITY(1,1) PRIMARY KEY,
 
@@ -357,7 +353,7 @@ CREATE TABLE sales_order (
     line_id varchar(255) NOT NULL,
     unit_price DECIMAL(19,4) NOT NULL,
     quantity INT NOT NULL,
-    freight DECIMAL(19,4) NOT NULL,
+    freight DECIMAL(19,4),
     sub_total DECIMAL(19,4) NOT NULL,
     tax_amt DECIMAL(19,4),
     total_due DECIMAL(19,4) NOT NULL,
@@ -379,7 +375,7 @@ CREATE TABLE sales_order (
     due_date_day varchar(2),
     due_date_hour varchar(2),
     due_date_minute varchar(2),
-    due_date DATETIME NOT NULL,
+    due_date DATETIME,
 
     /* Date */
     ship_date_year varchar(4),
@@ -388,8 +384,15 @@ CREATE TABLE sales_order (
     ship_date_day varchar(2),
     ship_date_hour varchar(2),
     ship_date_minute varchar(2),
-    ship_date DATETIME NOT NULL,
+    ship_date DATETIME,
 
+    /* Date */
+    currency_rate_date_year varchar(4),
+    currency_rate_date_quarter varchar(1),
+    currency_rate_date_month varchar(2),
+    currency_rate_date_day varchar(2),
+    currency_rate_date_hour varchar(2),
+    currency_rate_date_minute varchar(2),
     currency_rate_date DATETIME,
 
     /* Customer */
@@ -408,8 +411,8 @@ CREATE TABLE sales_order (
     customer_address varchar(255),
 
     /* Sales territory */
-    sales_territory_id INT NOT NULL,
-    sales_territory_name varchar(255) NOT NULL,
+    sales_territory_id INT,
+    sales_territory_name varchar(255),
     sales_territory_YTD DECIMAL(19,4),
     sales_territory_sales_last_year DECIMAL(19,4),
     sales_territory_cost_YTD DECIMAL(19,4),
@@ -420,7 +423,7 @@ CREATE TABLE sales_order (
     ship_to_address_region varchar(255),
     ship_to_address_city varchar(255),
     ship_to_address_postalcode varchar(255),
-    ship_to_address_street varchar(255),
+    /* ship_to_address_street varchar(255), */
     ship_to_address varchar(255) NOT NULL,
 
     /* Address */
@@ -428,27 +431,27 @@ CREATE TABLE sales_order (
     bill_to_address_region varchar(255),
     bill_to_address_city varchar(255),
     bill_to_address_postalcode varchar(255),
-    bill_to_address_street varchar(255),
+    /* bill_to_address_street varchar(255), */
     bill_to_address varchar(255) NOT NULL,
 
     /* Shipmethod */
-    shipmethod_id INT NOT NULL,
-    shipmethod_name varchar(255) NOT NULL,
+    shipmethod_id INT,
+    shipmethod_name varchar(255),
     shipmethod_ship_base DECIMAL(19,4),
     shipmethod_ship_rate DECIMAL(19,4),
 
     /* paymethod */
-    paymethod varchar(255) NOT NULL,
+    paymethod varchar(255),
 
     /* Currency */
-    from_currency_code INT,
+    from_currency_code varchar(255),
     from_currency_name varchar(255),
 
     /* Currency */
-    to_currency_code INT,
+    to_currency_code varchar(255),
     to_currency_name varchar(255),
 
-    /* Region */
+    /* Region Welke region? */
     region_country varchar(255),
     region_state varchar(255),
     region varchar(255),
@@ -488,7 +491,6 @@ CREATE TABLE sales_order (
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -638,7 +640,6 @@ CREATE TABLE business_entity_contact (
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -730,7 +731,7 @@ CREATE TABLE sales_territory_history(
 
     /* Employee */
     employee_id varchar(255) NOT NULL,
-    employee_full_name varchar(255) NOT NULL,,
+    employee_full_name varchar(255) NOT NULL,
     employee_extention varchar(255),
     employee_sales_YTD INT,
     employee_sales_last_year INT,
@@ -760,7 +761,6 @@ CREATE TABLE sales_territory_history(
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -833,7 +833,6 @@ CREATE TABLE sales_person_quota_history(
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
@@ -1084,7 +1083,6 @@ CREATE TABLE purchase_order(
     employee_sick_leave_hours INT,
     employee_martial_status varchar(255),
     employee_orginanizion_level INT,
-    employee_demographics varchar(255),
     employee_sales_quota INT,
     employee_bonus DECIMAL(19,4),
     employee_commission_pct DECIMAL(19,4),
