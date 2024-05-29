@@ -50,8 +50,8 @@ def sales_order():
 
     # 3 years later...
     insert_data(export_cursor, "sales_order", ["id", "line_id"], order_ac)
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], order_aw)
     insert_data(export_cursor, "sales_order", ["id", "line_id"], order_nw)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], order_aw)
       
 def aenc ():
     aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
