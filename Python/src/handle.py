@@ -4,6 +4,7 @@ import decimal
 import math
 import pandas as pd
 import re
+from classes import DateTable, DateHandler
 
 def setup_cursor(connection):
     connection = pyodbc.connect(connection)
@@ -19,14 +20,32 @@ def get_data(cursor, name):
     data = pd.DataFrame(rows_as_tuples, columns=column_names)
     return data
 
-def insert_data(cursor, destination_table: str, p_keys: list, data):
-    # cursor: Je geeft de export cursor mee die naar de datawarehouse schrijft
-    # destination_table: De tabel in je datawarehouse waar je naar gaat schrijven
-    # p_keys: Je geeft de primary key(s) mee in een lijst
-    # data: een pandas dataframe met al je data, de kolomnamen moeten 1:1 overeenkomen met de namen in je datawarehouse.
+def insert_data(cursor, destination_table: str, p_keys: list, data, chunksize=10000):
     columns_string, fill_string, column_types = get_column_data(cursor, destination_table)
     column_names = columns_string.split(', ')
 
+    count = 1
+    for start in range(0, len(data), chunksize):
+        batch = data.iloc[start:start + chunksize]
+        batch_values = []
+        for i, r in batch.iterrows():
+            try:
+                p_key_values = [r[p_key] for p_key in p_keys]
+                existing_row = fetch_existing_row(cursor, destination_table, p_keys, p_key_values)
+                new_values = [validate_data_type(r[col], col_type) for col, col_type in zip(column_names, column_types)]
+
+                if existing_row is None or check_changes(existing_row, new_values, column_types):
+                    batch_values.append(tuple(new_values))
+            except Exception as e:
+                print(e)
+
+        if batch_values:
+            cursor.executemany(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", batch_values)
+            print(f"Batch {count}: Success")
+        count += 1
+
+    cursor.commit()
+    """
     for i, r in data.iterrows():
         try:
             p_key_values = [r[p_key] for p_key in p_keys]
@@ -34,11 +53,22 @@ def insert_data(cursor, destination_table: str, p_keys: list, data):
             new_values = [validate_data_type(r[col], col_type) for col, col_type in zip(column_names, column_types)]
 
             if existing_row is None or check_changes(existing_row, new_values, column_types):
+                #print(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", tuple(new_values))
                 cursor.execute(f"INSERT INTO {destination_table} ({columns_string}) VALUES ({fill_string})", tuple(new_values))
         except Exception as e:
             print(e)
-
+        except pyodbc.IntegrityError as e:
+            print(f"IntegrityError occurred: {e}")
+        except pyodbc.OperationalError as e:
+            print(f"OperationalError occurred: {e}")
+        except pyodbc.DatabaseError as e:
+            print(f"DatabaseError occurred: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            raise
+            
     cursor.commit()
+    """
 
 def fetch_existing_row(cursor, table, p_keys, p_key_values):
     where_clause = " AND ".join([f"{x} = ?" for x in p_keys])
@@ -82,6 +112,16 @@ def validate_data_type(value, data_type):
                     return value
                 except:
                     pass
+                try:
+                    obj = datetime.datetime.strptime(value, "%Y-%m-%d")
+                    return obj.strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    pass
+                try:
+                    obj = datetime.datetime.strptime(value, "%d-%m-%Y %H:%M:%S")
+                    return obj.strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    pass
             return value.strftime('%Y-%m-%d %H:%M:%S')
         elif data_type == bool:
             return bool(value)
@@ -108,6 +148,25 @@ def house_number(address):
     except Exception as e:
         print(f"Error: {e}")
         return None
+    
+def date (date):
+    date_list = date.split(' ')
+    date = date_list[0].split('-')
+    time = date_list[1].split(':')
+
+    return DateTable(date[0], quarter(DateHandler().get_month_number(date[1])), DateHandler().get_month_number(date[1]), date[2], time[0], time[1], date)
+
+
+
+def quarter (month):
+    if month <= 3:
+        return 1
+    elif month <= 6:
+        return 2
+    elif month <= 9:
+        return 3
+    else:
+        return 4
 
 def handleOne (cursor, source, method):   
     for index, row in source.iterrows():
