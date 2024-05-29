@@ -44,9 +44,9 @@ def sales_order():
     test_aw = order_aw.head(1000)
     test_nw = order_nw.head(1000)
 
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_ac)
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_aw)
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_nw)
+    #insert_data(export_cursor, "sales_order", ["id", "line_id"], test_ac)
+    #insert_data(export_cursor, "sales_order", ["id", "line_id"], test_aw)
+    #insert_data(export_cursor, "sales_order", ["id", "line_id"], test_nw)
 
     # 3 years later...
     insert_data(export_cursor, "sales_order", ["id", "line_id"], order_ac)
