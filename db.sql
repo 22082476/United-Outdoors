@@ -384,7 +384,7 @@ CREATE TABLE sales_order (
     ship_date_day varchar(2),
     ship_date_hour varchar(2),
     ship_date_minute varchar(2),
-    ship_date DATETIME NULL,
+    ship_date DATETIME,
 
     /* Date */
     currency_rate_date_year varchar(4),

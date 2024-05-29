@@ -117,6 +117,11 @@ def validate_data_type(value, data_type):
                     return obj.strftime('%Y-%m-%d %H:%M:%S')
                 except:
                     pass
+                try:
+                    obj = datetime.datetime.strptime(value, "%d-%m-%Y %H:%M:%S")
+                    return obj.strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    pass
             return value.strftime('%Y-%m-%d %H:%M:%S')
         elif data_type == bool:
             return bool(value)

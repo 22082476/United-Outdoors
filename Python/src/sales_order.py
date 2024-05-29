@@ -9,15 +9,49 @@ import os
 import pandas as pd
 import numpy as np
 
+EMPTY_LIST = ['currency_rate_date', 
+              'currency_rate_date_year',
+              'currency_rate_date_quarter',
+              'currency_rate_date_month',
+              'currency_rate_date_day',
+              'currency_rate_date_hour',
+              'currency_rate_date_minute',
+              'shipmethod_ship_base',
+              'shipmethod_ship_rate',
+              'from_currency_code',
+              'from_currency_name',
+              'to_currency_code',
+              'to_currency_name',
+              'region_country',
+              'region_state',
+              'region',
+              'sales_territory_YTD' ,
+    'sales_territory_sales_last_year' ,
+    'sales_territory_cost_YTD' ,
+    'sales_territory_cost_last_year' 
+              ]
 
-def sales_order ():
-    aenc()
 
-    #aw_sales_order_header = get_data(setup_cursor(os.getenv("adventureworks")), "Sales.SalesOrderHeader")
-    #aw_sales_order_detail = get_data(setup_cursor(os.getenv("adventureworks")), "Sales.SalesOrderDetail")
+def sales_order():
+    export_cursor = setup_cursor(os.getenv('datawarehouse'))
+    order_ac = aenc()
+    order_ac = order_ac.loc[:,~order_ac.columns.duplicated()]
+    order_aw = adventure_works()
+    order_nw = northwind()
 
-    #nw_orders = get_data(setup_cursor(os.getenv("northwind")), "Orders")
-    #nw_order_details = get_data(setup_cursor(os.getenv("northwind")), "OrderDetails")
+    # Voor snel modellen testen en PowerBI shit
+    test_ac = order_ac.head(1000)
+    test_aw = order_aw.head(1000)
+    test_nw = order_nw.head(1000)
+
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_ac)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_aw)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], test_nw)
+
+    # 3 years later...
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], order_ac)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], order_aw)
+    insert_data(export_cursor, "sales_order", ["id", "line_id"], order_nw)
       
 def aenc ():
     aenc_sales_order = get_data(setup_cursor(os.getenv("aenc")), "Sales_order")
@@ -117,10 +151,8 @@ def aenc ():
     aenc_sales["to_currency_code"] = None
     aenc_sales["to_currency_name"] = None
 
-    export_cursor = setup_cursor(os.getenv("datawarehouse"))
-    
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], aenc_sales.head(10))
-
+    # export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    # insert_data(export_cursor, "sales_order", ["id", "line_id"], aenc_sales.head(10))
     return aenc_sales
 
 def adventure_works():
@@ -215,9 +247,90 @@ def adventure_works():
     employee_merge = pd.merge(products_merge, df_employees, left_on='SalesPersonID', right_on='employee_id', how='left')
     employee_merge = employee_merge.drop(columns=['SalesPersonID'])
     
-    export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    # export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    # insert_data(export_cursor, "sales_order", ["id", "line_id"], employee_merge)
+    return employee_merge
 
-    insert_data(export_cursor, "sales_order", ["id", "line_id"], employee_merge)
+def northwind():
+    cursor = setup_cursor(os.getenv("northwind"))
+    orders = get_data(cursor, "Orders")
+    order_details = get_data(cursor, "Order_Details")
+    region = get_data(cursor, "Region")
+    shippers = get_data(cursor, "Shippers")
+
+    df_customers = customers()
+    df_products = products()
+    data = []
+    employees = employee()
+    for x in employees.northwind:
+        convert = x.__dict__
+        data.append(convert)
+    df_employees = pd.DataFrame(data)
+    df_employees = df_employees.drop_duplicates(subset='employee_id', keep='last')
+
+    orders_merge = pd.merge(order_details, orders, left_on='OrderID', right_on='OrderID', how='left').rename(columns={'ShipAddress':'ship_to_address', 'ShipCity':'ship_to_address_city','ShipRegion':'ship_to_address_region','ShipCountry':'ship_to_address_country','ShipPostalCode':'ship_to_address_postalcode','OrderDate':'order_date','RequiredDate':'due_date','ShippedDate':'ship_date'})
+    orders_merge = orders_merge.drop(columns=['ShipName'])
+    orders_merge['order_date'] = pd.to_datetime(orders_merge['order_date'])
+    orders_merge['due_date'] = pd.to_datetime(orders_merge['due_date'])
+    orders_merge['ship_date'] = pd.to_datetime(orders_merge['ship_date'])
+
+    for date_col in ['order_date', 'due_date', 'ship_date']:
+        orders_merge[f'{date_col}_year'] = orders_merge[date_col].dt.year
+        orders_merge[f'{date_col}_quarter'] = orders_merge[date_col].dt.quarter
+        orders_merge[f'{date_col}_month'] = orders_merge[date_col].dt.month
+        orders_merge[f'{date_col}_day'] = orders_merge[date_col].dt.day
+        orders_merge[f'{date_col}_hour'] = orders_merge[date_col].dt.hour
+        orders_merge[f'{date_col}_minute'] = orders_merge[date_col].dt.minute
+
+    orders_merge['ship_date_year'] = orders_merge['ship_date_year'].fillna(0).astype(int)
+    orders_merge['ship_date_quarter'] = orders_merge['ship_date_quarter'].fillna(0).astype(int)
+    orders_merge['ship_date_month'] = orders_merge['ship_date_month'].fillna(0).astype(int)
+    orders_merge['ship_date_day'] = orders_merge['ship_date_day'].fillna(0).astype(int)
+    orders_merge['ship_date_hour'] = orders_merge['ship_date_hour'].fillna(0).astype(int)
+    orders_merge['ship_date_minute'] = orders_merge['ship_date_minute'].fillna(0).astype(int)
+  
+    orders_merge['ProductID'] = 'NW_' + orders_merge['ProductID'].astype(str)
+    product_merge = pd.merge(orders_merge, df_products, left_on='ProductID', right_on='product_id', how='left')
+    product_merge = product_merge.rename(columns={'ProductID':'line_id', 'OrderID':'id', 'UnitPrice':'unit_price','Quantity':'quantity','Freight':'freight'})
+    
+    shippers_merge = pd.merge(product_merge, shippers, left_on='ShipVia', right_on='ShipperID', how='left')
+    shippers_merge = shippers_merge.rename(columns={'CompanyName':'company_name'})
+    shippers_merge = shippers_merge.drop(columns=['ShipperID','Phone','Discount'])
+    
+    values_merge = shippers_merge.copy()
+    values_merge['tax_amt'] = None
+    values_merge['total_due'] = values_merge['unit_price'] * values_merge['quantity'] + values_merge['freight']
+    values_merge['revenue'] = values_merge['total_due']
+    values_merge['sub_total'] = values_merge['total_due']
+
+    empty_merge = values_merge
+    for x in EMPTY_LIST:
+        empty_merge[x] = None
+    
+    empty_merge['EmployeeID'] = 'NW_' + empty_merge['EmployeeID'].astype(str)
+    employee_merge = pd.merge(empty_merge, df_employees, left_on='EmployeeID', right_on='employee_id', how='left')
+    employee_merge = employee_merge.drop(columns=['EmployeeID'])
+    
+    employee_merge['sales_territory_id'] = None
+    employee_merge['sales_territory_name'] = employee_merge['employee_territory']
+    employee_merge['CustomerID'] = 'NW_' + employee_merge['CustomerID'].astype(str)
+
+    customer_merge = pd.merge(employee_merge, df_customers, left_on='CustomerID', right_on='customer_id', how='left')
+    customer_merge = customer_merge.drop(columns=['CustomerID'])
+    
+    rest_merge = customer_merge
+    rest_merge['bill_to_address'] = rest_merge['ship_to_address']
+    rest_merge['bill_to_address_city'] = rest_merge['ship_to_address_city']
+    rest_merge['bill_to_address_region'] = rest_merge['ship_to_address_region']
+    rest_merge['bill_to_address_postalcode'] = rest_merge['ship_to_address_postalcode']
+    rest_merge['bill_to_address_country'] = rest_merge['ship_to_address_country']
+    rest_merge['shipmethod_name'] = rest_merge['company_name']
+    rest_merge['paymethod'] = 'else'
+    rest_merge = rest_merge.rename(columns={'ShipVia':'shipmethod_id'})
+
+    # export_cursor = setup_cursor(os.getenv("datawarehouse"))
+    # insert_data(export_cursor, "sales_order", ["id", "line_id"], rest_merge)
+    return rest_merge
 
 def set_addresses(address, ids, count, addresses):
     text = 'ship_to_address_' if count < 1 else 'bill_to_address_'
