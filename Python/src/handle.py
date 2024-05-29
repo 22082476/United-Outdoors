@@ -108,19 +108,19 @@ def validate_data_type(value, data_type):
         elif data_type == datetime.datetime:
             if isinstance(value, str):
                 try:
-                    datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
-                    return value
-                except:
+                    obj = datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+                    return obj.strftime('%Y-%m-%d %H:%M:%S')
+                except ValueError:
                     pass
                 try:
                     obj = datetime.datetime.strptime(value, "%Y-%m-%d")
                     return obj.strftime('%Y-%m-%d %H:%M:%S')
-                except:
+                except ValueError:
                     pass
                 try:
                     obj = datetime.datetime.strptime(value, "%d-%m-%Y %H:%M:%S")
                     return obj.strftime('%Y-%m-%d %H:%M:%S')
-                except:
+                except ValueError:
                     pass
             return value.strftime('%Y-%m-%d %H:%M:%S')
         elif data_type == bool:
@@ -134,6 +134,8 @@ def compare_rows(value1, value2):
         return True
     if value1 is None and value2 is None:
         return True
+    print(f"Bestaand: {value1}")
+    print(f"Nieuw: {value2}")
     return False
 
 def house_number(address):
