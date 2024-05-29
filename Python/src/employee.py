@@ -100,7 +100,6 @@ def aenc_employee ():
             termination_date = termination_date.split(" ")
             
             termination_date = date_handler.format_date(termination_date[0].split("-")[2],date_handler.get_month_number(termination_date[0].split("-")[1]), termination_date[0].split("-")[0], termination_date[1])
-            print(termination_date)
         else:
             termination_date = None
             
