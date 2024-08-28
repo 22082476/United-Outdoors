@@ -9,4 +9,4 @@ Hoogtepunten:
 - Ontwikkeling en optimalisatie van voorspellende Machine Learning-modellen.
 - Creatie van interactieve dashboards met actuele en voorspellende data-analyse in Power BI.
 
-Project en Vak beoordeeld met een 9.
+Project en vak beoordeeld met een 9.
